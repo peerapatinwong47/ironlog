@@ -37,7 +37,7 @@
   .panel{
     background: var(--panel);
     border: 1px solid var(--border-soft);
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 1px 2px rgba(43,38,32,0.04), 0 1px 8px rgba(43,38,32,0.03);
     width: 100%;
     max-width: 100%;
@@ -113,11 +113,40 @@
   .icon-btn:hover{ color: var(--text); border-color: var(--text-dim); }
   .icon-btn.danger:hover{ color: var(--danger); border-color: var(--danger); background: var(--danger-bg); }
 
+  /* Navigation Tab Styling */
+  .nav-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .nav-tab:hover {
+    color: var(--text);
+    background: var(--panel-alt);
+  }
+  .nav-tab.active {
+    color: var(--accent-strong);
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: 0 1px 3px rgba(43,38,32,0.06);
+  }
+
   .row-action{ color: var(--text-faint); transition: color .15s ease; }
   .row-action:hover{ color: var(--text); }
   .row-action.danger:hover{ color: var(--danger); }
 
-  input.row-check, input.group-check{
+  input.row-check, input.group-check, input.cat-check{
     width: 17px; height: 17px; accent-color: var(--accent-strong); cursor: pointer;
   }
 
@@ -166,23 +195,38 @@
   .ghost-input:focus{ outline:none; border-color: var(--accent-strong); box-shadow: 0 0 0 3px rgba(185,138,36,0.12); }
   .ghost-input:disabled{ background: var(--panel-alt); color: var(--text-faint); }
 
-  .exercise-group{ border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden; }
-  .exercise-group + .exercise-group{ margin-top: 0.65rem; }
-  .exercise-group summary{
+  /* Accordion History */
+  .category-group{ border: 1px solid var(--border); border-radius: 9px; overflow: hidden; background: #FFF; }
+  .category-group + .category-group{ margin-top: 0.85rem; }
+  .category-group > summary{
     list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-    padding: 0.7rem 0.9rem; background: var(--panel-alt);
+    padding: 0.75rem 1rem; background: var(--panel-alt); border-bottom: 1px solid transparent;
   }
-  .exercise-group summary::-webkit-details-marker{ display: none; }
-  .exercise-group summary .chev{ transition: transform .15s ease; color: var(--text-faint); }
-  .exercise-group[open] summary .chev{ transform: rotate(90deg); }
-  .exercise-group summary .group-name{ font-weight: 600; font-size: 0.9rem; }
-  .exercise-group summary .group-meta{ font-size: 0.72rem; color: var(--text-faint); }
+  .category-group[open] > summary{ border-bottom-color: var(--border-soft); }
+  .category-group > summary::-webkit-details-marker{ display: none; }
+  .category-group > summary .chev-cat{ transition: transform .15s ease; color: var(--accent-strong); }
+  .category-group[open] > summary .chev-cat{ transform: rotate(90deg); }
+  .category-group > summary .cat-name{ font-weight: 700; font-size: 0.95rem; color: var(--text); }
+  .category-group > summary .cat-meta{ font-size: 0.73rem; color: var(--text-dim); }
+  .category-body { padding: 0.65rem; background: #FAF9F6; }
+
+  .exercise-group{ border: 1px solid var(--border-soft); border-radius: 7px; overflow: hidden; background: #FFF; }
+  .exercise-group + .exercise-group{ margin-top: 0.55rem; }
+  .exercise-group > summary{
+    list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    padding: 0.65rem 0.85rem; background: #FFFFFF;
+  }
+  .exercise-group > summary::-webkit-details-marker{ display: none; }
+  .exercise-group > summary .chev{ transition: transform .15s ease; color: var(--text-faint); }
+  .exercise-group[open] > summary .chev{ transform: rotate(90deg); }
+  .exercise-group > summary .group-name{ font-weight: 600; font-size: 0.88rem; color: var(--text); }
+  .exercise-group > summary .group-meta{ font-size: 0.71rem; color: var(--text-faint); }
 
   table.log-table{ border-collapse: collapse; width: 100%; }
   table.log-table th{
     text-align: left; font-size: 0.71rem; color: var(--text-faint);
     font-weight: 500; padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border-soft);
-    white-space: nowrap;
+    white-space: nowrap; background: var(--panel-alt);
   }
   table.log-table td{
     padding: 0.6rem 0.9rem; font-size: 0.85rem; border-bottom: 1px solid var(--border-soft);
@@ -193,6 +237,53 @@
   table.log-table tr.editing-row td{ background: var(--accent-soft); }
 
   .modal-backdrop{ background: rgba(43,38,32,0.45); }
+
+  /* Minimalist Draggable Rest Timer - Theme Match */
+  #floatingTimer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(43, 38, 32, 0.08), 0 2px 6px rgba(43, 38, 32, 0.04);
+    border-radius: 9999px;
+    padding: 0.35rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  #floatingTimer:hover {
+    background: #FFFFFF;
+    border-color: var(--accent-strong);
+    box-shadow: 0 6px 22px rgba(185, 138, 36, 0.18);
+  }
+  #floatingTimer:active {
+    cursor: grabbing;
+    opacity: 0.6 !important;
+  }
+
+  .timer-preset-btn {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+  }
+  .timer-preset-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-strong);
+  }
 
   ::-webkit-scrollbar{ height: 8px; width: 8px; }
   ::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 4px; }
@@ -206,7 +297,8 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-7">
 
-  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7 pb-5 border-b divider">
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5 pb-4 border-b divider">
     <div class="flex items-baseline gap-2">
       <h1 class="font-display text-2xl tracking-tight">Iron<span style="color:var(--accent-strong)">Log</span></h1>
       <span class="text-xs text-[var(--text-faint)] hidden sm:inline">บันทึกและติดตามพัฒนาการการเทรน</span>
@@ -222,7 +314,7 @@
       </button>
       <button id="addMemberBtn" class="btn-ghost whitespace-nowrap">+ เพิ่มเมมเบอร์ใหม่</button>
       
-      <!-- ปุ่มส่งออก Word (.docx) ดีไซน์ Minimal -->
+      <!-- ปุ่มส่งออก Word (.docx) -->
       <button id="exportWordBtn" class="icon-btn" title="ส่งออกไฟล์ Word สรุปผลของคนที่เลือก (.docx)" aria-label="ส่งออกไฟล์ Word สรุปผลของคนที่เลือก">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       </button>
@@ -241,12 +333,32 @@
     </div>
   </header>
 
-  <div class="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 mb-6">
+  <!-- แถบเลือกหน้า (Navigation Bar) 4 หน้า -->
+  <nav class="flex items-center justify-between sm:justify-start gap-1 sm:gap-2 mb-6 p-1.5 rounded-xl border border-[var(--border-soft)] bg-[#F8F6F0] overflow-x-auto">
+    <button id="navLogBtn" class="nav-tab active">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <span>บันทึก</span>
+    </button>
+    <button id="navChartBtn" class="nav-tab">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>กราฟ</span>
+    </button>
+    <button id="navHistoryBtn" class="nav-tab">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>ประวัติ</span>
+    </button>
+    <button id="navTimerBtn" class="nav-tab">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>จับเวลา</span>
+    </button>
+  </nav>
 
+  <!-- ================= หน้า 1: บันทึก ================= -->
+  <main id="pageLog" class="max-w-2xl mx-auto mb-6">
     <section class="panel p-5 sm:p-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display text-lg tracking-wide">บันทึกการเทรน</h2>
-        <span id="editModeTag" class="hidden text-xs px-2 py-0.5 rounded" style="background:var(--accent-soft); color:var(--accent-strong);">กำลังแก้ไข</span>
+        <h2 class="font-display text-xl tracking-wide">บันทึกการเทรน</h2>
+        <span id="editModeTag" class="hidden text-xs px-2.5 py-1 rounded-md font-semibold" style="background:var(--accent-soft); color:var(--accent-strong);">กำลังแก้ไข</span>
       </div>
       <form id="workoutForm" class="space-y-4">
         <div>
@@ -255,12 +367,20 @@
         </div>
 
         <div>
+          <label class="field-label" for="categoryInput">หมวดหมู่กล้ามเนื้อ</label>
+          <div class="ghost-wrap">
+            <div class="ghost-overlay" aria-hidden="true"><span class="typed" id="ghostCatTyped"></span><span class="suggest" id="ghostCatSuggestion"></span></div>
+            <input type="text" id="categoryInput" class="ghost-input" placeholder="เช่น อก, หลัง, ขา, ไหล่" autocomplete="off" required>
+          </div>
+        </div>
+
+        <div>
           <label class="field-label" for="exerciseInput">ท่าออกกำลังกาย</label>
           <div class="ghost-wrap">
             <div class="ghost-overlay" aria-hidden="true"><span class="typed" id="ghostTyped"></span><span class="suggest" id="ghostSuggestion"></span></div>
             <input type="text" id="exerciseInput" class="ghost-input" placeholder="เช่น Barbell Squat" autocomplete="off" required>
           </div>
-          <p class="text-[0.68rem] text-[var(--text-faint)] mt-1">กด Tab หรือ Enter เพื่อเติมคำที่แนะนำ</p>
+          <p class="text-[0.68rem] text-[var(--text-faint)] mt-1">กด Tab หรือ Enter เพื่อเติมคำที่แนะนำ (ระบบจะดึงหมวดหมู่อัตโนมัติ)</p>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
@@ -280,24 +400,27 @@
 
         <div>
           <label class="field-label" for="notesInput">หมายเหตุ</label>
-          <textarea id="notesInput" class="input-base" rows="2" placeholder="ความรู้สึก, ฟอร์ม, อื่นๆ (ถ้ามี)"></textarea>
+          <textarea id="notesInput" class="input-base" rows="3" placeholder="ความรู้สึก, ฟอร์ม, อื่นๆ (ถ้ามี)"></textarea>
         </div>
 
-        <div class="flex gap-2">
-          <button type="submit" id="submitBtn" class="btn-primary flex-1">บันทึกรายการ</button>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" id="submitBtn" class="btn-primary flex-1 py-3 text-base">บันทึกรายการ</button>
           <button type="button" id="cancelEditBtn" class="btn-ghost hidden">ยกเลิก</button>
         </div>
       </form>
     </section>
+  </main>
 
-    <section class="panel p-5 sm:p-6 flex flex-col justify-between">
+  <!-- ================= หน้า 2: กราฟ ================= -->
+  <main id="pageChart" class="hidden max-w-4xl mx-auto mb-6">
+    <section class="panel p-5 sm:p-6 min-h-[460px] flex flex-col justify-between">
       <div>
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h2 class="font-display text-lg tracking-wide">กราฟพัฒนาการ</h2>
-          <select id="chartExerciseSelect" class="input-base w-full sm:w-56"></select>
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <h2 class="font-display text-xl tracking-wide">กราฟพัฒนาการ</h2>
+          <select id="chartExerciseSelect" class="input-base w-full sm:w-64"></select>
         </div>
 
-        <div id="chartStats" class="hidden flex flex-wrap gap-2 mb-4">
+        <div id="chartStats" class="hidden flex flex-wrap gap-3 mb-6">
           <div class="stat-chip">
             <div class="stat-label">น้ำหนักล่าสุด</div>
             <div class="stat-value tabular" id="statLatest">—</div>
@@ -314,39 +437,100 @@
         </div>
       </div>
 
-      <div class="relative w-full flex-1 min-h-[300px] pb-2">
+      <div class="relative w-full flex-1 min-h-[320px] pb-2">
         <canvas id="progressChart"></canvas>
       </div>
-      <div id="emptyChart" class="hidden text-center py-10 flex-col justify-center items-center">
-        <p class="text-sm text-[var(--text-dim)]">ยังไม่มีข้อมูลสำหรับแสดงกราฟ</p>
+      <div id="emptyChart" class="hidden text-center py-16 flex-col justify-center items-center">
+        <p class="text-base text-[var(--text-dim)] font-medium">ยังไม่มีข้อมูลสำหรับแสดงกราฟ</p>
         <p class="text-xs text-[var(--text-faint)] mt-1">บันทึกท่าเดิมซ้ำหลายวันเพื่อดูพัฒนาการ</p>
       </div>
     </section>
-  </div>
+  </main>
 
-  <section class="panel p-5 sm:p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-display text-lg tracking-wide">ประวัติการเทรน</h2>
-      <span id="historyCount" class="text-xs text-[var(--text-faint)]"></span>
-    </div>
-
-    <div id="bulkActionBar" class="hidden items-center justify-between gap-3 mb-4 px-4 py-2.5 rounded-lg" style="background:var(--accent-soft); border:1px solid var(--border-soft);">
-      <span class="text-sm" id="bulkCount" style="color:var(--accent-strong); font-weight:600;"></span>
-      <div class="flex items-center gap-2">
-        <button id="bulkClearBtn" class="btn-ghost">ยกเลิกการเลือก</button>
-        <button id="bulkDeleteBtn" class="btn-danger">ลบรายการที่เลือก</button>
+  <!-- ================= หน้า 3: ประวัติการเทรน ================= -->
+  <main id="pageHistory" class="hidden mb-6">
+    <section class="panel p-5 sm:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-xl tracking-wide">ประวัติการเทรน</h2>
+        <span id="historyCount" class="text-xs text-[var(--text-faint)]"></span>
       </div>
-    </div>
 
-    <div id="historyGroups"></div>
+      <div id="bulkActionBar" class="hidden items-center justify-between gap-3 mb-4 px-4 py-2.5 rounded-lg" style="background:var(--accent-soft); border:1px solid var(--border-soft);">
+        <span class="text-sm" id="bulkCount" style="color:var(--accent-strong); font-weight:600;"></span>
+        <div class="flex items-center gap-2">
+          <button id="bulkClearBtn" class="btn-ghost">ยกเลิกการเลือก</button>
+          <button id="bulkDeleteBtn" class="btn-danger">ลบรายการที่เลือก</button>
+        </div>
+      </div>
 
-    <div id="emptyHistory" class="hidden text-center py-10 flex-col items-center justify-center">
-      <p class="text-sm text-[var(--text-dim)]" id="emptyHistoryTitle">ยังไม่มีประวัติการเทรนของเมมเบอร์นี้</p>
-      <p class="text-xs text-[var(--text-faint)] mt-1" id="emptyHistorySub">เริ่มบันทึกท่าแรกได้จากฟอร์มด้านบน</p>
-    </div>
-  </section>
+      <div id="historyGroups"></div>
+
+      <div id="emptyHistory" class="hidden text-center py-16 flex-col items-center justify-center">
+        <p class="text-base text-[var(--text-dim)] font-medium" id="emptyHistoryTitle">ยังไม่มีประวัติการเทรนของเมมเบอร์นี้</p>
+        <p class="text-xs text-[var(--text-faint)] mt-1" id="emptyHistorySub">เริ่มบันทึกท่าแรกได้จากฟอร์มด้านหน้า</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= หน้า 4: ตัวจับเวลา (Full Rest Timer) ================= -->
+  <main id="pageTimer" class="hidden max-w-xl mx-auto mb-6">
+    <section class="panel p-6 sm:p-8 text-center flex flex-col items-center justify-center">
+      <span class="text-xs font-bold tracking-widest text-[var(--accent-strong)] uppercase mb-2">Rest Timer</span>
+      <h2 class="font-display text-2xl mb-5">นาฬิกาจับเวลาพักเซท</h2>
+
+      <!-- หน้าจอเวลานับถอยหลัง / เดินหน้า -->
+      <div class="my-2 py-6 px-8 rounded-2xl bg-[var(--panel-alt)] border border-[var(--border)] w-full max-w-sm flex flex-col items-center justify-center shadow-inner relative">
+        <span id="mainTimerDisplay" class="font-display text-6xl tracking-wider text-[var(--text)] tabular">00:00</span>
+        <span id="timerStatusLabel" class="text-xs text-[var(--text-dim)] mt-2 font-medium">พร้อมเริ่มจับเวลา</span>
+
+        <!-- ปุ่มปรับเวลาด่วนระหว่างเทรน -->
+        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-[var(--border-soft)] w-full justify-center">
+          <button id="quickSub15Btn" class="px-3 py-1 rounded-md text-xs font-semibold bg-white border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--text)] transition-all active:scale-95">-15 วิ</button>
+          <button id="quickAdd15Btn" class="px-3 py-1 rounded-md text-xs font-semibold bg-white border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--text)] transition-all active:scale-95">+15 วิ</button>
+          <button id="quickAdd30Btn" class="px-3 py-1 rounded-md text-xs font-semibold bg-white border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--text)] transition-all active:scale-95">+30 วิ</button>
+        </div>
+      </div>
+
+      <!-- ปุ่มพรีเซ็ตเวลาพักเซท -->
+      <div class="w-full max-w-sm my-4">
+        <label class="field-label text-center mb-2">ตั้งเวลาพักเซทล่วงหน้า</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button class="timer-preset-btn" data-sec="30">30 วิ</button>
+          <button class="timer-preset-btn" data-sec="60">1 นาที</button>
+          <button class="timer-preset-btn" data-sec="90">1:30 นาที</button>
+          <button class="timer-preset-btn" data-sec="120">2 นาที</button>
+          <button class="timer-preset-btn" data-sec="180">3 นาที</button>
+          <button class="timer-preset-btn" data-sec="300">5 นาที</button>
+        </div>
+      </div>
+
+      <!-- ปุ่มควบคุม -->
+      <div class="flex items-center gap-3 mt-2 w-full max-w-sm">
+        <button id="mainTimerResetBtn" class="btn-ghost flex-1 py-3 text-sm font-semibold">รีเซ็ต</button>
+        <button id="mainTimerToggleBtn" class="btn-primary flex-1 py-3 text-base">เริ่มจับเวลา</button>
+      </div>
+    </section>
+  </main>
+
 </div>
 
+<!-- Minimalist Floating Rest Timer (Theme Matched) -->
+<div id="floatingTimer" title="แตะค้างและลากเพื่อย้ายตำแหน่ง">
+  <div class="flex items-center gap-1.5 pr-1.5 border-r border-[var(--border-soft)]">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span id="timerDisplay" class="font-display font-medium text-sm tabular tracking-wide text-[var(--text)] min-w-[42px] text-center">00:00</span>
+  </div>
+  
+  <button id="timerToggleBtn" class="w-7 h-7 rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)] border border-[rgba(185,138,36,0.3)] flex items-center justify-center hover:bg-[var(--accent)] hover:text-[#2B2110] active:scale-95 transition-all" title="เริ่ม/พัก ตัวจับเวลา">
+    <!-- Icon injected via JS -->
+  </button>
+  
+  <button id="timerResetBtn" class="text-[var(--text-faint)] hover:text-[var(--text-dim)] p-1 transition-colors" title="รีเซ็ต">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+  </button>
+</div>
+
+<!-- Modals -->
 <div id="memberModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 px-4">
   <div class="panel p-6 w-full max-w-sm" style="background:#fff;">
     <h3 class="font-display text-lg mb-4" id="memberModalTitle">เพิ่มเมมเบอร์ใหม่</h3>
@@ -374,13 +558,17 @@
 (function(){
   const MEMBERS_KEY = 'ironlog_members_v1';
   const WORKOUTS_KEY = 'ironlog_workouts_v1';
+  const TIMER_POS_KEY = 'ironlog_timer_pos_v1';
 
   let members = [];
   let workouts = [];
   let currentMemberId = null;
   let currentChartExercise = null;
   let chartInstance = null;
+  
+  let ghostCatSuggestionValue = '';
   let ghostSuggestionValue = '';
+  
   let editingWorkoutId = null;
   let modalMode = 'add';
   let confirmCallback = null;
@@ -395,6 +583,7 @@
     } else {
       members = m ? JSON.parse(m) : [];
       workouts = w ? JSON.parse(w) : [];
+      workouts.forEach(item => { if(!item.category) item.category = 'ทั่วไป'; });
     }
   }
   function save(){
@@ -416,12 +605,13 @@
       { id: 'm3', name: 'ปอนด์' }
     ];
     workouts = [];
-    function addSeries(memberId, exercise, startWeight, step, reps, sets, weeks){
+    function addSeries(memberId, category, exercise, startWeight, step, reps, sets, weeks){
       for(let i = weeks - 1; i >= 0; i--){
         workouts.push({
           id: uid(),
           memberId,
           date: dateStr(i * 7),
+          category,
           exercise,
           weight: startWeight + (weeks - 1 - i) * step,
           reps, sets,
@@ -429,25 +619,70 @@
         });
       }
     }
-    addSeries('m1', 'Barbell Squat', 60, 2.5, 5, 5, 6);
-    addSeries('m1', 'Bench Press', 40, 1.25, 8, 4, 6);
-    addSeries('m1', 'Deadlift', 80, 5, 5, 3, 5);
+    addSeries('m1', 'ขา', 'Barbell Squat', 60, 2.5, 5, 5, 6);
+    addSeries('m1', 'อก', 'Bench Press', 40, 1.25, 8, 4, 6);
+    addSeries('m1', 'หลัง', 'Deadlift', 80, 5, 5, 3, 5);
 
-    addSeries('m2', 'Barbell Squat', 35, 2.5, 8, 4, 5);
-    addSeries('m2', 'Overhead Press', 20, 1.25, 8, 4, 5);
+    addSeries('m2', 'ขา', 'Barbell Squat', 35, 2.5, 8, 4, 5);
+    addSeries('m2', 'ไหล่', 'Overhead Press', 20, 1.25, 8, 4, 5);
 
-    addSeries('m3', 'Deadlift', 100, 5, 5, 3, 6);
-    addSeries('m3', 'Bench Press', 60, 2.5, 6, 4, 6);
-    addSeries('m3', 'Barbell Squat', 90, 2.5, 5, 5, 6);
+    addSeries('m3', 'หลัง', 'Deadlift', 100, 5, 5, 3, 6);
+    addSeries('m3', 'อก', 'Bench Press', 60, 2.5, 6, 4, 6);
+    addSeries('m3', 'ขา', 'Barbell Squat', 90, 2.5, 5, 5, 6);
   }
+
+  // --- ระบบสลับ 4 หน้า (4-Page Navigation Router) ---
+  const pages = {
+    log: document.getElementById('pageLog'),
+    chart: document.getElementById('pageChart'),
+    history: document.getElementById('pageHistory'),
+    timer: document.getElementById('pageTimer')
+  };
+
+  const navBtns = {
+    log: document.getElementById('navLogBtn'),
+    chart: document.getElementById('navChartBtn'),
+    history: document.getElementById('navHistoryBtn'),
+    timer: document.getElementById('navTimerBtn')
+  };
+
+  function switchPage(targetKey){
+    Object.keys(pages).forEach(key => {
+      if(key === targetKey){
+        pages[key].classList.remove('hidden');
+        navBtns[key].classList.add('active');
+      } else {
+        pages[key].classList.add('hidden');
+        navBtns[key].classList.remove('active');
+      }
+    });
+
+    if(targetKey === 'chart') setTimeout(() => renderChart(), 50);
+    if(targetKey === 'history') renderHistory();
+  }
+
+  navBtns.log.addEventListener('click', () => switchPage('log'));
+  navBtns.chart.addEventListener('click', () => switchPage('chart'));
+  navBtns.history.addEventListener('click', () => switchPage('history'));
+  navBtns.timer.addEventListener('click', () => switchPage('timer'));
 
   function memberWorkouts(memberId){
     return workouts.filter(w => w.memberId === memberId);
   }
-  function distinctExercises(memberId){
+
+  function memberExercises(memberId){
     const scoped = memberWorkouts(memberId);
-    const source = scoped.length ? scoped : workouts;
-    const list = [...new Set(source.map(w => w.exercise))];
+    const list = [...new Set(scoped.map(w => w.exercise))];
+    return list.sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
+  }
+
+  function allGlobalExercises(){
+    const list = [...new Set(workouts.map(w => w.exercise).filter(Boolean))];
+    return list.sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
+  }
+
+  function allGlobalCategories(){
+    const list = [...new Set(workouts.map(w => w.category).filter(Boolean))];
     return list.sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
   }
 
@@ -511,7 +746,7 @@
 
   function updateFormAvailability(){
     const disabled = !currentMemberId;
-    ['dateInput','exerciseInput','weightInput','repsInput','setsInput','notesInput','submitBtn'].forEach(id => {
+    ['dateInput','categoryInput','exerciseInput','weightInput','repsInput','setsInput','notesInput','submitBtn'].forEach(id => {
       document.getElementById(id).disabled = disabled;
     });
     document.getElementById('chartExerciseSelect').disabled = disabled;
@@ -572,7 +807,7 @@
 
     if(!list.length){
       emptyTitle.textContent = 'ยังไม่มีประวัติการเทรนของเมมเบอร์นี้';
-      emptySub.textContent = 'เริ่มบันทึกท่าแรกได้จากฟอร์มด้านบน';
+      emptySub.textContent = 'เริ่มบันทึกท่าแรกได้จากฟอร์มด้านหน้า';
       empty.classList.remove('hidden');
       empty.classList.add('flex');
       updateBulkActionBar();
@@ -581,110 +816,136 @@
     empty.classList.add('hidden');
     empty.classList.remove('flex');
 
-    const groups = {};
+    const catGroups = {};
     list.forEach(w => {
-      if(!groups[w.exercise]) groups[w.exercise] = [];
-      groups[w.exercise].push(w);
+      const cat = w.category || 'ทั่วไป';
+      if(!catGroups[cat]) catGroups[cat] = {};
+      if(!catGroups[cat][w.exercise]) catGroups[cat][w.exercise] = [];
+      catGroups[cat][w.exercise].push(w);
     });
 
-    const groupArr = Object.keys(groups).map(exercise => {
-      const entries = groups[exercise].slice().sort((a,b) => b.date.localeCompare(a.date));
-      return { exercise, entries, latestDate: entries[0].date };
-    });
+    const sortedCategories = Object.keys(catGroups).sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
 
-    // เรียงท่า A-Z เสมอ
-    groupArr.sort((a,b) => a.exercise.localeCompare(b.exercise, 'th', { sensitivity: 'base' }));
-
-    groupArr.forEach(group => {
-      const details = document.createElement('details');
-      details.className = 'exercise-group';
-      details.open = true;
-
-      const summary = document.createElement('summary');
-      summary.innerHTML = `
-        <div class="flex items-center gap-2">
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          <span class="group-name">${escapeHtml(group.exercise)}</span>
-        </div>
-        <span class="group-meta">${group.entries.length} รายการ · ล่าสุด ${formatDate(group.latestDate)}</span>
-      `;
-      details.appendChild(summary);
-
-      const tableWrap = document.createElement('div');
-      tableWrap.className = 'overflow-x-auto';
-      const table = document.createElement('table');
-      table.className = 'log-table';
+    sortedCategories.forEach(catName => {
+      const exMap = catGroups[catName];
+      const exNames = Object.keys(exMap).sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
       
-      const groupIds = group.entries.map(w => w.id);
-      const isAllGroupChecked = groupIds.length > 0 && groupIds.every(id => selectedWorkoutIds.has(id));
+      let totalCatEntries = 0;
+      exNames.forEach(ex => totalCatEntries += exMap[ex].length);
 
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th class="w-8"><input type="checkbox" class="group-check" title="เลือกทั้งหมดในกลุ่มนี้" ${isAllGroupChecked ? 'checked' : ''}></th>
-            <th>วันที่</th>
-            <th>น้ำหนัก</th>
-            <th>จำนวนครั้ง × เซท</th>
-            <th>Total Volume</th>
-            <th>โน้ต</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
+      const catDetails = document.createElement('details');
+      catDetails.className = 'category-group';
+      catDetails.open = true;
+
+      const catSummary = document.createElement('summary');
+      catSummary.innerHTML = `
+        <div class="flex items-center gap-2">
+          <svg class="chev-cat" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          <span class="cat-name">${escapeHtml(catName)}</span>
+        </div>
+        <span class="cat-meta">${exNames.length} ท่า · รวม ${totalCatEntries} รายการ</span>
       `;
-      const tbody = table.querySelector('tbody');
+      catDetails.appendChild(catSummary);
 
-      group.entries.forEach(w => {
-        const volume = w.weight * w.sets * w.reps;
-        const tr = document.createElement('tr');
-        if(w.id === editingWorkoutId) tr.classList.add('editing-row');
-        const isChecked = selectedWorkoutIds.has(w.id) ? 'checked' : '';
-        tr.innerHTML = `
-          <td><input type="checkbox" class="row-check" data-id="${w.id}" ${isChecked}></td>
-          <td class="tabular whitespace-nowrap">${formatDate(w.date)}</td>
-          <td class="tabular">${w.weight} kg</td>
-          <td class="tabular">${w.reps} × ${w.sets}</td>
-          <td class="tabular" style="color:var(--accent-strong)">${volume.toLocaleString('th-TH')} kg</td>
-          <td class="text-[var(--text-dim)] max-w-[160px] truncate" title="${escapeHtml(w.notes||'')}">${escapeHtml(w.notes||'—')}</td>
-          <td>
-            <div class="flex items-center gap-2">
-              <button class="row-action" data-edit="${w.id}" title="แก้ไขรายการ" aria-label="แก้ไขรายการ">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              </button>
-              <button class="row-action danger" data-delete="${w.id}" title="ลบรายการ" aria-label="ลบรายการ">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H8a1 1 0 01-1-1V6h10z"/></svg>
-              </button>
-            </div>
-          </td>`;
-        tbody.appendChild(tr);
-      });
+      const catBody = document.createElement('div');
+      catBody.className = 'category-body';
 
-      const groupCheck = table.querySelector('.group-check');
-      const rowChecks = tbody.querySelectorAll('.row-check');
+      exNames.forEach(exName => {
+        const entries = exMap[exName].slice().sort((a,b) => b.date.localeCompare(a.date));
+        
+        const exDetails = document.createElement('details');
+        exDetails.className = 'exercise-group';
+        exDetails.open = false;
 
-      groupCheck.addEventListener('change', (e) => {
-        const checked = e.target.checked;
-        groupIds.forEach(id => {
-          if(checked) selectedWorkoutIds.add(id);
-          else selectedWorkoutIds.delete(id);
+        const exSummary = document.createElement('summary');
+        exSummary.innerHTML = `
+          <div class="flex items-center gap-2">
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            <span class="group-name">${escapeHtml(exName)}</span>
+          </div>
+          <span class="group-meta">${entries.length} ครั้ง · ล่าสุด ${formatDate(entries[0].date)}</span>
+        `;
+        exDetails.appendChild(exSummary);
+
+        const tableWrap = document.createElement('div');
+        tableWrap.className = 'overflow-x-auto';
+        const table = document.createElement('table');
+        table.className = 'log-table';
+
+        const groupIds = entries.map(w => w.id);
+        const isAllGroupChecked = groupIds.length > 0 && groupIds.every(id => selectedWorkoutIds.has(id));
+
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th class="w-8"><input type="checkbox" class="group-check" title="เลือกทั้งหมดในท่านี้" ${isAllGroupChecked ? 'checked' : ''}></th>
+              <th>วันที่</th>
+              <th>น้ำหนัก</th>
+              <th>จำนวนครั้ง × เซท</th>
+              <th>Total Volume</th>
+              <th>โน้ต</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+
+        entries.forEach(w => {
+          const volume = w.weight * w.sets * w.reps;
+          const tr = document.createElement('tr');
+          if(w.id === editingWorkoutId) tr.classList.add('editing-row');
+          const isChecked = selectedWorkoutIds.has(w.id) ? 'checked' : '';
+          tr.innerHTML = `
+            <td><input type="checkbox" class="row-check" data-id="${w.id}" ${isChecked}></td>
+            <td class="tabular whitespace-nowrap">${formatDate(w.date)}</td>
+            <td class="tabular font-semibold">${w.weight} kg</td>
+            <td class="tabular">${w.reps} × ${w.sets}</td>
+            <td class="tabular" style="color:var(--accent-strong)">${volume.toLocaleString('th-TH')} kg</td>
+            <td class="text-[var(--text-dim)] max-w-[160px] truncate" title="${escapeHtml(w.notes||'')}">${escapeHtml(w.notes||'—')}</td>
+            <td>
+              <div class="flex items-center gap-2">
+                <button class="row-action" data-edit="${w.id}" title="แก้ไขรายการ" aria-label="แก้ไขรายการ">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button class="row-action danger" data-delete="${w.id}" title="ลบรายการ" aria-label="ลบรายการ">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H8a1 1 0 01-1-1V6h10z"/></svg>
+                </button>
+              </div>
+            </td>`;
+          tbody.appendChild(tr);
         });
-        renderHistory();
-      });
 
-      rowChecks.forEach(chk => {
-        chk.addEventListener('change', (e) => {
-          const id = e.target.dataset.id;
-          if(e.target.checked) selectedWorkoutIds.add(id);
-          else selectedWorkoutIds.delete(id);
-          
-          groupCheck.checked = groupIds.every(gId => selectedWorkoutIds.has(gId));
-          updateBulkActionBar();
+        const groupCheck = table.querySelector('.group-check');
+        const rowChecks = tbody.querySelectorAll('.row-check');
+
+        groupCheck.addEventListener('change', (e) => {
+          const checked = e.target.checked;
+          groupIds.forEach(id => {
+            if(checked) selectedWorkoutIds.add(id);
+            else selectedWorkoutIds.delete(id);
+          });
+          renderHistory();
         });
+
+        rowChecks.forEach(chk => {
+          chk.addEventListener('change', (e) => {
+            const id = e.target.dataset.id;
+            if(e.target.checked) selectedWorkoutIds.add(id);
+            else selectedWorkoutIds.delete(id);
+            
+            groupCheck.checked = groupIds.every(gId => selectedWorkoutIds.has(gId));
+            updateBulkActionBar();
+          });
+        });
+
+        tableWrap.appendChild(table);
+        exDetails.appendChild(tableWrap);
+        catBody.appendChild(exDetails);
       });
 
-      tableWrap.appendChild(table);
-      details.appendChild(tableWrap);
-      container.appendChild(details);
+      catDetails.appendChild(catBody);
+      container.appendChild(catDetails);
     });
 
     container.querySelectorAll('button[data-delete]').forEach(btn => {
@@ -724,19 +985,21 @@
     if(!w) return;
     editingWorkoutId = id;
     document.getElementById('dateInput').value = w.date;
+    categoryInput.value = w.category || 'ทั่วไป';
     exerciseInput.value = w.exercise;
     document.getElementById('weightInput').value = w.weight;
     document.getElementById('repsInput').value = w.reps;
     document.getElementById('setsInput').value = w.sets;
     document.getElementById('notesInput').value = w.notes || '';
-    ghostTyped.textContent = w.exercise;
-    ghostSuggestion.textContent = '';
-    ghostSuggestionValue = '';
+    
+    updateCatGhost();
+    updateGhost();
 
     document.getElementById('submitBtn').textContent = 'บันทึกการแก้ไข';
     document.getElementById('cancelEditBtn').classList.remove('hidden');
     document.getElementById('editModeTag').classList.remove('hidden');
-    renderHistory();
+    
+    switchPage('log');
     document.getElementById('workoutForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -751,15 +1014,14 @@
     exitEditMode();
     document.getElementById('workoutForm').reset();
     document.getElementById('dateInput').value = todayStr();
-    ghostTyped.textContent = '';
-    ghostSuggestion.textContent = '';
-    ghostSuggestionValue = '';
+    updateCatGhost();
+    updateGhost();
     renderHistory();
   });
 
   function renderChartExerciseOptions(){
     const sel = document.getElementById('chartExerciseSelect');
-    const exercises = currentMemberId ? distinctExercises(currentMemberId) : [];
+    const exercises = currentMemberId ? memberExercises(currentMemberId) : [];
     sel.innerHTML = '';
     exercises.forEach(ex => {
       const opt = document.createElement('option');
@@ -888,9 +1150,65 @@
     });
   }
 
+  // Ghost Autocomplete สำหรับ หมวดหมู่กล้ามเนื้อ
+  const categoryInput = document.getElementById('categoryInput');
+  const ghostCatTyped = document.getElementById('ghostCatTyped');
+  const ghostCatSuggestion = document.getElementById('ghostCatSuggestion');
+
+  function updateCatGhost(){
+    const val = categoryInput.value;
+    ghostCatTyped.textContent = val;
+    if(!val){
+      ghostCatSuggestion.textContent = '';
+      ghostCatSuggestionValue = '';
+      return;
+    }
+    const pool = allGlobalCategories();
+    const match = pool.find(name =>
+      name.toLowerCase().startsWith(val.toLowerCase()) &&
+      name.toLowerCase() !== val.toLowerCase()
+    );
+    if(match){
+      ghostCatSuggestionValue = match;
+      ghostCatSuggestion.textContent = match.slice(val.length);
+    } else {
+      ghostCatSuggestionValue = '';
+      ghostCatSuggestion.textContent = '';
+    }
+  }
+
+  categoryInput.addEventListener('input', updateCatGhost);
+  categoryInput.addEventListener('keydown', (e) => {
+    if((e.key === 'Tab' || e.key === 'Enter') && ghostCatSuggestionValue){
+      e.preventDefault();
+      categoryInput.value = ghostCatSuggestionValue;
+      ghostCatTyped.textContent = ghostCatSuggestionValue;
+      ghostCatSuggestion.textContent = '';
+      ghostCatSuggestionValue = '';
+      document.getElementById('exerciseInput').focus();
+    }
+  });
+
+  // Ghost Autocomplete สำหรับ ท่าออกกำลังกาย + ออโต้ฟิลล์หมวดหมู่
   const exerciseInput = document.getElementById('exerciseInput');
   const ghostTyped = document.getElementById('ghostTyped');
   const ghostSuggestion = document.getElementById('ghostSuggestion');
+
+  // ฟังก์ชันค้นหาและเติมหมวดหมู่อัตโนมัติจากชื่อท่า
+  function autoFillCategoryByExercise(exerciseName) {
+    if (!exerciseName) return;
+    const cleanName = exerciseName.trim().toLowerCase();
+
+    // ค้นหาประวัติย้อนหลังจากรายการล่าสุดไปเก่าสุด
+    const match = workouts.slice().reverse().find(w => 
+      w.exercise && w.exercise.trim().toLowerCase() === cleanName
+    );
+
+    if (match && match.category) {
+      categoryInput.value = match.category;
+      updateCatGhost(); // อัปเดตข้อความ Ghost Overlay ของหมวดหมู่
+    }
+  }
 
   function updateGhost(){
     const val = exerciseInput.value;
@@ -900,7 +1218,7 @@
       ghostSuggestionValue = '';
       return;
     }
-    const pool = distinctExercises(currentMemberId);
+    const pool = allGlobalExercises();
     const match = pool.find(name =>
       name.toLowerCase().startsWith(val.toLowerCase()) &&
       name.toLowerCase() !== val.toLowerCase()
@@ -914,7 +1232,18 @@
     }
   }
 
-  exerciseInput.addEventListener('input', updateGhost);
+  // ตรวจสอบและดึงหมวดหมู่ขณะพิมพ์ หรือเมื่อพิมพ์ชื่อท่าตรงกับในระบบ
+  exerciseInput.addEventListener('input', () => {
+    updateGhost();
+    autoFillCategoryByExercise(exerciseInput.value);
+  });
+
+  // ดึงหมวดหมู่อีกครั้งเมื่อพิมพ์เสร็จและย้ายโฟกัสออกจากช่อง
+  exerciseInput.addEventListener('blur', () => {
+    autoFillCategoryByExercise(exerciseInput.value);
+  });
+
+  // ดึงหมวดหมู่อัตโนมัติเมื่อกด Tab หรือ Enter เพื่อยอมรับคำแนะนำ Ghost
   exerciseInput.addEventListener('keydown', (e) => {
     if((e.key === 'Tab' || e.key === 'Enter') && ghostSuggestionValue){
       e.preventDefault();
@@ -922,6 +1251,10 @@
       ghostTyped.textContent = ghostSuggestionValue;
       ghostSuggestion.textContent = '';
       ghostSuggestionValue = '';
+
+      // ออโต้ฟิลล์หมวดหมู่ทันทีหลังจากกดรับชื่อท่า
+      autoFillCategoryByExercise(exerciseInput.value);
+
       document.getElementById('weightInput').focus();
     }
   });
@@ -931,6 +1264,7 @@
     if(!currentMemberId) return;
 
     const date = document.getElementById('dateInput').value;
+    const category = categoryInput.value.trim() || 'ทั่วไป';
     const exercise = exerciseInput.value.trim();
     const weight = parseFloat(document.getElementById('weightInput').value);
     const reps = parseInt(document.getElementById('repsInput').value, 10);
@@ -942,20 +1276,19 @@
     if(editingWorkoutId){
       const w = workouts.find(x => x.id === editingWorkoutId);
       if(w){
-        w.date = date; w.exercise = exercise; w.weight = weight;
+        w.date = date; w.category = category; w.exercise = exercise; w.weight = weight;
         w.reps = reps; w.sets = sets; w.notes = notes;
       }
       exitEditMode();
     } else {
-      workouts.push({ id: uid(), memberId: currentMemberId, date, exercise, weight, sets, reps, notes });
+      workouts.push({ id: uid(), memberId: currentMemberId, date, category, exercise, weight, sets, reps, notes });
     }
     save();
 
     e.target.reset();
     document.getElementById('dateInput').value = todayStr();
-    ghostTyped.textContent = '';
-    ghostSuggestion.textContent = '';
-    ghostSuggestionValue = '';
+    updateCatGhost();
+    updateGhost();
 
     renderHistory();
     renderChartExerciseOptions();
@@ -974,6 +1307,7 @@
     renderHistory();
     renderChartExerciseOptions();
     renderChart();
+    updateCatGhost();
     updateGhost();
     updateFormAvailability();
   });
@@ -1018,7 +1352,7 @@
     }, 'ล้างข้อมูลทั้งหมด');
   });
 
-  /* ฟังก์ชัน Export เป็นไฟล์ Word (.docx) ดีไซน์ Minimal & Clean อ่านง่าย สบายตา */
+  /* Export Word (.docx) */
   async function exportToWord() {
     if (!currentMemberId) {
       alert('กรุณาเลือกหรือเพิ่มเมมเบอร์ก่อนส่งออก');
@@ -1038,15 +1372,13 @@
 
     const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = docx;
 
-    // การกำหนดสไตล์ Minimal & Clean
-    const FONT = "Sarabun";           // ฟอนต์ไร้หัวอ่านง่าย สะอาดตา
-    const COLOR_MAIN = "2D3748";      // สีข้อความหลัก Off-Black ไม่ดำจัดจนปวดตา
-    const COLOR_MUTED = "718096";     // สีเทานุ่มนวล สำหรับรายละเอียดรอง
-    const COLOR_ACCENT = "B98A24";    // สีทองพรีเมียม สำหรับเน้นหัวข้อ
-    const COLOR_BG_HEADER = "F8FAFC"; // สีพื้นหลังหัวตาราง เทา-ฟ้าอ่อน สบายตา
-    const COLOR_BORDER = "E2E8F0";    // สีเส้นขอบบางนุ่มนวล
+    const FONT = "Sarabun";
+    const COLOR_MAIN = "2D3748";
+    const COLOR_MUTED = "718096";
+    const COLOR_ACCENT = "B98A24";
+    const COLOR_BG_HEADER = "F8FAFC";
+    const COLOR_BORDER = "E2E8F0";
 
-    // เส้นขอบตาราง Minimal: ไม่มีเส้นแนวตั้ง มีเฉพาะเส้นแนวนอนสีเทาบางๆ
     const cleanBorders = {
       top: { style: BorderStyle.SINGLE, size: 4, color: COLOR_BORDER },
       bottom: { style: BorderStyle.SINGLE, size: 4, color: COLOR_BORDER },
@@ -1054,34 +1386,20 @@
       right: { style: BorderStyle.NONE }
     };
 
-    // ระยะเว้นขอบภายในเซลล์ตาราง (Cell Margins/Padding) ช่วยให้ตารางโปร่งสบายตา
-    const cellMargins = {
-      top: 120,
-      bottom: 120,
-      left: 160,
-      right: 160
-    };
-
+    const cellMargins = { top: 120, bottom: 120, left: 160, right: 160 };
     const children = [];
 
-    // Header เอกสาร
     children.push(
       new Paragraph({
-        children: [
-          new TextRun({ text: "IRON LOG", bold: true, size: 28, font: FONT, color: COLOR_ACCENT })
-        ],
+        children: [ new TextRun({ text: "IRON LOG", bold: true, size: 28, font: FONT, color: COLOR_ACCENT }) ],
         spacing: { after: 80, line: 360 }
       }),
       new Paragraph({
-        children: [
-          new TextRun({ text: `รายงานสรุปผลการเทรน — ${currentMember.name}`, bold: true, size: 22, font: FONT, color: COLOR_MAIN })
-        ],
+        children: [ new TextRun({ text: `รายงานสรุปผลการเทรน — ${currentMember.name}`, bold: true, size: 22, font: FONT, color: COLOR_MAIN }) ],
         spacing: { after: 60, line: 360 }
       }),
       new Paragraph({
-        children: [
-          new TextRun({ text: `วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`, size: 18, font: FONT, color: COLOR_MUTED })
-        ],
+        children: [ new TextRun({ text: `วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`, size: 18, font: FONT, color: COLOR_MUTED }) ],
         spacing: { after: 300, line: 360 }
       })
     );
@@ -1091,28 +1409,22 @@
     if (mWorkouts.length === 0) {
       children.push(
         new Paragraph({
-          children: [
-            new TextRun({ text: "— ยังไม่มีประวัติการบันทึกการเทรน —", italic: true, color: COLOR_MUTED, size: 20, font: FONT })
-          ],
+          children: [ new TextRun({ text: "— ยังไม่มีประวัติการบันทึกการเทรน —", italic: true, color: COLOR_MUTED, size: 20, font: FONT }) ],
           spacing: { after: 200, line: 360 }
         })
       );
     } else {
       const grouped = {};
       mWorkouts.forEach(w => {
-        if (!grouped[w.exercise]) grouped[w.exercise] = [];
-        grouped[w.exercise].push(w);
+        const cat = w.category || 'ทั่วไป';
+        if (!grouped[cat]) grouped[cat] = {};
+        if (!grouped[cat][w.exercise]) grouped[cat][w.exercise] = [];
+        grouped[cat][w.exercise].push(w);
       });
 
-      // เรียงท่า A-Z เสมอ
-      const sortedExercises = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
-
-      // 1. ตารางสรุปผลสถิติสูงสุด (Personal Records)
       children.push(
         new Paragraph({
-          children: [
-            new TextRun({ text: "SUMMARY (PERSONAL RECORDS)", bold: true, size: 20, font: FONT, color: COLOR_ACCENT })
-          ],
+          children: [ new TextRun({ text: "SUMMARY (PERSONAL RECORDS)", bold: true, size: 20, font: FONT, color: COLOR_ACCENT }) ],
           spacing: { before: 180, after: 140, line: 360 }
         })
       );
@@ -1121,145 +1433,111 @@
         new TableRow({
           tableHeader: true,
           children: [
-            new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: "ท่าออกกำลังกาย (A-Z)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })],
-              shading: { fill: COLOR_BG_HEADER },
-              borders: cleanBorders,
-              width: { size: 45, type: WidthType.PERCENTAGE }
-            }),
-            new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนักสูงสุด (PR)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })],
-              shading: { fill: COLOR_BG_HEADER },
-              borders: cleanBorders,
-              width: { size: 30, type: WidthType.PERCENTAGE }
-            }),
-            new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง (Reps)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })],
-              shading: { fill: COLOR_BG_HEADER },
-              borders: cleanBorders,
-              width: { size: 25, type: WidthType.PERCENTAGE }
-            })
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "หมวดหมู่", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 25, type: WidthType.PERCENTAGE } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "ท่าออกกำลังกาย", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 35, type: WidthType.PERCENTAGE } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนักสูงสุด (PR)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 22, type: WidthType.PERCENTAGE } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 18, type: WidthType.PERCENTAGE } })
           ]
         })
       ];
 
-      sortedExercises.forEach(exName => {
-        const items = grouped[exName];
-        let prItem = items[0];
-        items.forEach(item => {
-          if (item.weight > prItem.weight || (item.weight === prItem.weight && item.reps > prItem.reps)) {
-            prItem = item;
-          }
-        });
-
-        summaryRows.push(
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: exName, size: 19, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], borders: cleanBorders }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.weight} kg`, size: 19, font: FONT, color: COLOR_MAIN, bold: true })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.reps}`, size: 19, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders })
-            ]
-          })
-        );
-      });
-
-      children.push(
-        new Table({
-          rows: summaryRows,
-          width: { size: 100, type: WidthType.PERCENTAGE },
-          margins: cellMargins
-        }),
-        new Paragraph({ text: "", spacing: { after: 320, line: 360 } })
-      );
-
-      // 2. รายละเอียดประวัติการเทรน (เรียงท่า A-Z เสมอ)
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: "WORKOUT HISTORY", bold: true, size: 20, font: FONT, color: COLOR_ACCENT })
-          ],
-          spacing: { before: 200, after: 140, line: 360 }
-        })
-      );
-
-      sortedExercises.forEach(exercise => {
-        const items = grouped[exercise].sort((a, b) => b.date.localeCompare(a.date));
-        const pr = Math.max(...items.map(i => i.weight));
-
-        children.push(
-          new Paragraph({
-            children: [
-              new TextRun({ text: exercise, bold: true, color: COLOR_MAIN, size: 20, font: FONT }),
-              new TextRun({ text: `  ·  PR: ${pr} kg  ·  บันทึกทั้งหมด ${items.length} ครั้ง`, size: 18, font: FONT, color: COLOR_MUTED })
-            ],
-            spacing: { before: 200, after: 120, line: 360 }
-          })
-        );
-
-        const detailRows = [
-          new TableRow({
-            tableHeader: true,
-            children: [
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "วันที่", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 22, type: WidthType.PERCENTAGE } }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนัก", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 20, type: WidthType.PERCENTAGE } }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 18, type: WidthType.PERCENTAGE } }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "เซท", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 15, type: WidthType.PERCENTAGE } }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "โน้ต", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 25, type: WidthType.PERCENTAGE } })
-            ]
-          })
-        ];
-
-        items.forEach(item => {
-          detailRows.push(
+      Object.keys(grouped).sort((a,b) => a.localeCompare(b,'th')).forEach(cat => {
+        Object.keys(grouped[cat]).sort((a,b) => a.localeCompare(b,'th')).forEach(exName => {
+          const items = grouped[cat][exName];
+          let prItem = items[0];
+          items.forEach(item => {
+            if (item.weight > prItem.weight || (item.weight === prItem.weight && item.reps > prItem.reps)) prItem = item;
+          });
+          summaryRows.push(
             new TableRow({
               children: [
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatDate(item.date), size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.weight} kg`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.reps}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.sets}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
-                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: item.notes || "-", size: 18, font: FONT, color: COLOR_MUTED })], spacing: { line: 320 } })], borders: cleanBorders })
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: cat, size: 18, font: FONT, color: COLOR_MUTED })], spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: exName, size: 19, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.weight} kg`, size: 19, font: FONT, color: COLOR_MAIN, bold: true })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.reps}`, size: 19, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders })
               ]
             })
           );
         });
+      });
 
+      children.push(
+        new Table({ rows: summaryRows, width: { size: 100, type: WidthType.PERCENTAGE }, margins: cellMargins }),
+        new Paragraph({ text: "", spacing: { after: 320, line: 360 } })
+      );
+
+      children.push(
+        new Paragraph({
+          children: [ new TextRun({ text: "WORKOUT HISTORY", bold: true, size: 20, font: FONT, color: COLOR_ACCENT }) ],
+          spacing: { before: 200, after: 140, line: 360 }
+        })
+      );
+
+      Object.keys(grouped).sort((a,b) => a.localeCompare(b,'th')).forEach(cat => {
         children.push(
-          new Table({
-            rows: detailRows,
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            margins: cellMargins
-          }),
-          new Paragraph({ text: "", spacing: { after: 240, line: 360 } })
+          new Paragraph({
+            children: [ new TextRun({ text: `■ หมวดหมู่: ${cat}`, bold: true, color: COLOR_ACCENT, size: 20, font: FONT }) ],
+            spacing: { before: 180, after: 100, line: 360 }
+          })
         );
+
+        Object.keys(grouped[cat]).sort((a,b) => a.localeCompare(b,'th')).forEach(exercise => {
+          const items = grouped[cat][exercise].sort((a, b) => b.date.localeCompare(a.date));
+          const pr = Math.max(...items.map(i => i.weight));
+
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: exercise, bold: true, color: COLOR_MAIN, size: 19, font: FONT }),
+                new TextRun({ text: `  ·  PR: ${pr} kg  ·  บันทึกทั้งหมด ${items.length} ครั้ง`, size: 17, font: FONT, color: COLOR_MUTED })
+              ],
+              spacing: { before: 120, after: 100, line: 360 }
+            })
+          );
+
+          const detailRows = [
+            new TableRow({
+              tableHeader: true,
+              children: [
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "วันที่", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 22, type: WidthType.PERCENTAGE } }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนัก", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 20, type: WidthType.PERCENTAGE } }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 18, type: WidthType.PERCENTAGE } }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "เซท", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 15, type: WidthType.PERCENTAGE } }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "โน้ต", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 25, type: WidthType.PERCENTAGE } })
+              ]
+            })
+          ];
+
+          items.forEach(item => {
+            detailRows.push(
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatDate(item.date), size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.weight} kg`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.reps}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.sets}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: item.notes || "-", size: 18, font: FONT, color: COLOR_MUTED })], spacing: { line: 320 } })], borders: cleanBorders })
+                ]
+              })
+            );
+          });
+
+          children.push(
+            new Table({ rows: detailRows, width: { size: 100, type: WidthType.PERCENTAGE }, margins: cellMargins }),
+            new Paragraph({ text: "", spacing: { after: 180, line: 360 } })
+          );
+        });
       });
     }
 
     const docObj = new Document({
       styles: {
         default: {
-          document: {
-            run: {
-              font: FONT,
-              color: COLOR_MAIN,
-              size: 20
-            },
-            paragraph: {
-              spacing: { line: 360, lineRule: "auto" }
-            }
-          }
+          document: { run: { font: FONT, color: COLOR_MAIN, size: 20 }, paragraph: { spacing: { line: 360, lineRule: "auto" } } }
         }
       },
       sections: [{
-        properties: {
-          page: {
-            margin: {
-              top: 1440,    // ระยะขอบกระดาษ 1 นิ้วรอบทิศทาง
-              bottom: 1440,
-              left: 1440,
-              right: 1440
-            }
-          }
-        },
+        properties: { page: { margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } } },
         children: children
       }]
     });
@@ -1276,7 +1554,7 @@
 
   document.getElementById('exportWordBtn').addEventListener('click', exportToWord);
 
-  /* ฟังก์ชัน Export / Import JSON */
+  /* Export / Import JSON */
   document.getElementById('exportBtn').addEventListener('click', () => {
     const data = { members, workouts };
     const jsonStr = JSON.stringify(data, null, 2);
@@ -1305,6 +1583,7 @@
         if(data && Array.isArray(data.members) && Array.isArray(data.workouts)){
           members = data.members;
           workouts = data.workouts;
+          workouts.forEach(item => { if(!item.category) item.category = 'ทั่วไป'; });
           currentMemberId = members.length ? members[0].id : null;
           currentChartExercise = null;
           selectedWorkoutIds.clear();
@@ -1326,6 +1605,7 @@
     reader.readAsText(file);
   });
 
+  /* Modal Member */
   const modal = document.getElementById('memberModal');
   const newMemberName = document.getElementById('newMemberName');
   const modalTitle = document.getElementById('memberModalTitle');
@@ -1376,6 +1656,7 @@
       renderMemberSelect();
       renderChartExerciseOptions();
       renderChart();
+      updateCatGhost();
       updateGhost();
     }
     renderHistory();
@@ -1387,6 +1668,240 @@
     if(e.key === 'Escape'){ closeModal(); }
   });
 
+  /* Unified Synchronized Timer Logic (Floating & Page Timer) */
+  function initUnifiedTimer(){
+    const floatEl = document.getElementById('floatingTimer');
+    const floatDisplay = document.getElementById('timerDisplay');
+    const floatToggleBtn = document.getElementById('timerToggleBtn');
+    const floatResetBtn = document.getElementById('timerResetBtn');
+
+    const mainDisplay = document.getElementById('mainTimerDisplay');
+    const mainToggleBtn = document.getElementById('mainTimerToggleBtn');
+    const mainResetBtn = document.getElementById('mainTimerResetBtn');
+    const statusLabel = document.getElementById('timerStatusLabel');
+
+    // Quick Add Buttons
+    const quickSub15Btn = document.getElementById('quickSub15Btn');
+    const quickAdd15Btn = document.getElementById('quickAdd15Btn');
+    const quickAdd30Btn = document.getElementById('quickAdd30Btn');
+
+    let timerInterval = null;
+    let seconds = 0;
+    let isRunning = false;
+    let isCountdown = false;
+    let audioCtx = null;
+
+    // SVG Vector Icons for Minimalist Floating Control
+    const playIconSvg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseIconSvg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function formatTime(s) {
+      const mins = Math.floor(s / 60).toString().padStart(2, '0');
+      const secs = (s % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function playBeepSound() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.6);
+      } catch(e){}
+    }
+
+    function updateDisplays() {
+      const formatted = formatTime(seconds);
+      floatDisplay.textContent = formatted;
+      mainDisplay.textContent = formatted;
+
+      if (isRunning) {
+        floatToggleBtn.innerHTML = pauseIconSvg;
+        mainToggleBtn.textContent = 'พักการจับเวลา';
+        mainToggleBtn.style.background = 'var(--accent-strong)';
+        mainToggleBtn.style.color = '#FFF';
+        statusLabel.textContent = isCountdown ? 'กำลังนับถอยหลังเวลาพักเซท...' : 'กำลังจับเวลาพัก...';
+      } else {
+        floatToggleBtn.innerHTML = playIconSvg;
+        mainToggleBtn.textContent = 'เริ่มจับเวลา';
+        mainToggleBtn.style.background = 'var(--accent)';
+        mainToggleBtn.style.color = '#2B2110';
+        statusLabel.textContent = seconds === 0 ? 'พร้อมเริ่มจับเวลา' : 'หยุดชั่วคราว';
+      }
+    }
+
+    function startTimer() {
+      getAudioContext();
+      if (isRunning) return;
+      isRunning = true;
+      timerInterval = setInterval(() => {
+        if (isCountdown) {
+          if (seconds > 0) {
+            seconds--;
+          } else {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isCountdown = false;
+            playBeepSound();
+            statusLabel.textContent = '🔔 ครบเวลาพักเซทแล้ว!';
+          }
+        } else {
+          seconds++;
+        }
+        updateDisplays();
+      }, 1000);
+      updateDisplays();
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      clearInterval(timerInterval);
+      isRunning = false;
+      updateDisplays();
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      isCountdown = false;
+      seconds = 0;
+      updateDisplays();
+    }
+
+    function toggleTimer() {
+      getAudioContext();
+      if (isRunning) pauseTimer();
+      else startTimer();
+    }
+
+    function adjustTime(deltaSec) {
+      getAudioContext();
+      seconds = Math.max(0, seconds + deltaSec);
+      if (seconds > 0 && !isCountdown && !isRunning) {
+        isCountdown = true;
+      }
+      updateDisplays();
+    }
+
+    floatToggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleTimer(); });
+    mainToggleBtn.addEventListener('click', toggleTimer);
+
+    floatResetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTimer(); });
+    mainResetBtn.addEventListener('click', resetTimer);
+
+    // Quick Add / Sub Event Handlers
+    quickSub15Btn.addEventListener('click', () => adjustTime(-15));
+    quickAdd15Btn.addEventListener('click', () => adjustTime(15));
+    quickAdd30Btn.addEventListener('click', () => adjustTime(30));
+
+    // Preset Buttons
+    document.querySelectorAll('.timer-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sec = parseInt(btn.dataset.sec, 10);
+        clearInterval(timerInterval);
+        seconds = sec;
+        isCountdown = true;
+        isRunning = false;
+        startTimer();
+      });
+    });
+
+    // Dragging Logic (Touch & Mouse) for Floating Widget
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    const savedPos = JSON.parse(localStorage.getItem(TIMER_POS_KEY) || 'null');
+    if (savedPos) {
+      const maxLeft = window.innerWidth - 140;
+      const maxTop = window.innerHeight - 50;
+      const clampedX = Math.max(10, Math.min(savedPos.x, maxLeft));
+      const clampedY = Math.max(10, Math.min(savedPos.y, maxTop));
+      
+      floatEl.style.left = clampedX + 'px';
+      floatEl.style.top = clampedY + 'px';
+      floatEl.style.bottom = 'auto';
+      floatEl.style.right = 'auto';
+    }
+
+    function onStart(e) {
+      if (e.target.closest('button')) return;
+
+      isDragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const rect = floatEl.getBoundingClientRect();
+      startX = clientX;
+      startY = clientY;
+      initialLeft = rect.left;
+      initialTop = rect.top;
+
+      floatEl.style.bottom = 'auto';
+      floatEl.style.right = 'auto';
+      floatEl.style.left = initialLeft + 'px';
+      floatEl.style.top = initialTop + 'px';
+    }
+
+    function onMove(e) {
+      if (!isDragging) return;
+      if (e.cancelable) e.preventDefault();
+
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+
+      let newLeft = initialLeft + deltaX;
+      let newTop = initialTop + deltaY;
+
+      const rect = floatEl.getBoundingClientRect();
+      const maxLeft = window.innerWidth - rect.width - 8;
+      const maxTop = window.innerHeight - rect.height - 8;
+
+      newLeft = Math.max(8, Math.min(newLeft, maxLeft));
+      newTop = Math.max(8, Math.min(newTop, maxTop));
+
+      floatEl.style.left = newLeft + 'px';
+      floatEl.style.top = newTop + 'px';
+    }
+
+    function onEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+
+      const rect = floatEl.getBoundingClientRect();
+      localStorage.setItem(TIMER_POS_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+    }
+
+    floatEl.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+
+    floatEl.addEventListener('touchstart', onStart, { passive: false });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+
+    updateDisplays();
+  }
+
   function init(){
     load();
     document.getElementById('dateInput').value = todayStr();
@@ -1394,6 +1909,7 @@
     renderHistory();
     renderChartExerciseOptions();
     renderChart();
+    initUnifiedTimer();
   }
   init();
 })();
