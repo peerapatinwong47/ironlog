@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iron Log — Workout & Training Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<!-- docx library สำหรับสร้างไฟล์ .docx แท้รายบุคคลสำหรับมือถือ -->
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  :root{
+    --bg: #FAF8F3;
+    --panel: #FFFFFF;
+    --panel-alt: #F3EEE3;
+    --border: #E6E0D2;
+    --border-soft: #EFEADD;
+    --text: #2B2620;
+    --text-dim: #797365;
+    --text-faint: #ACA695;
+    --accent: #E8B84B;
+    --accent-strong: #B98A24;
+    --accent-soft: #FBF3DD;
+    --danger: #BD4632;
+    --danger-bg: #FBEAE5;
+  }
+  html,body{ background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.55; overflow-x: hidden; }
+  .font-display{ font-family: 'Oswald', sans-serif; }
+  .tabular{ font-variant-numeric: tabular-nums; }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(43,38,32,0.04), 0 1px 8px rgba(43,38,32,0.03);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .divider{ border-color: var(--border-soft); }
+
+  .field-label{ font-size: 0.79rem; color: var(--text-dim); margin-bottom: 0.35rem; display:block; }
+
+  .input-base{
+    width: 100%;
+    max-width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.93rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    box-sizing: border-box;
+  }
+  .input-base::placeholder{ color: var(--text-faint); }
+  .input-base:focus{ outline:none; border-color: var(--accent-strong); box-shadow: 0 0 0 3px rgba(185,138,36,0.12); }
+  .input-base:disabled{ background: var(--panel-alt); color: var(--text-faint); cursor: not-allowed; }
+
+  input[type="date"].input-base {
+    appearance: none;
+    -webkit-appearance: none;
+    min-height: 42px;
+    display: block;
+  }
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0;
+    margin: 0;
+  }
+
+  select.input-base{ appearance:none; -webkit-appearance:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2379736D' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat; background-position: right 0.65rem center; padding-right: 2.1rem;
+  }
+
+  .btn-primary{
+    background: var(--accent); color: #2B2110; font-weight: 600;
+    border-radius: 8px; padding: 0.65rem 1.15rem; font-size: 0.9rem;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .btn-primary:hover{ background: #edc262; }
+  .btn-primary:active{ transform: translateY(1px); }
+  .btn-primary:disabled{ background: var(--border-soft); color: var(--text-faint); cursor: not-allowed; }
+
+  .btn-danger{ background: var(--danger); color: #fff; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.1rem; font-size: 0.88rem; transition: background .15s ease; }
+  .btn-danger:hover{ background: #a63c2a; }
+
+  .btn-ghost{
+    background: transparent; color: var(--text-dim); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.6rem 1.05rem; font-size: 0.86rem; transition: all .15s ease;
+  }
+  .btn-ghost:hover{ color: var(--text); border-color: var(--text-dim); }
+
+  .icon-btn{
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim);
+    transition: all .15s ease; flex-shrink: 0; background: #fff;
+  }
+  .icon-btn:hover{ color: var(--text); border-color: var(--text-dim); }
+  .icon-btn.danger:hover{ color: var(--danger); border-color: var(--danger); background: var(--danger-bg); }
+
+  .row-action{ color: var(--text-faint); transition: color .15s ease; }
+  .row-action:hover{ color: var(--text); }
+  .row-action.danger:hover{ color: var(--danger); }
+
+  input.row-check, input.group-check{
+    width: 17px; height: 17px; accent-color: var(--accent-strong); cursor: pointer;
+  }
+
+  .stat-chip{
+    background: var(--panel-alt); border: 1px solid var(--border-soft); border-radius: 8px;
+    padding: 0.5rem 0.85rem; flex: 1 1 100px;
+  }
+  .stat-chip .stat-label{ font-size: 0.68rem; color: var(--text-faint); }
+  .stat-chip .stat-value{ font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: var(--accent-strong); }
+  .stat-chip .stat-delta{ font-size: 0.72rem; margin-top: 0.1rem; }
+  .stat-delta.up{ color: #4C8B4A; }
+  .stat-delta.down{ color: var(--danger); }
+  .stat-delta.flat{ color: var(--text-faint); }
+
+  .ghost-wrap{ 
+    position: relative; 
+    background: #FFFFFF; 
+    border-radius: 8px; 
+    width: 100%;
+    max-width: 100%;
+  }
+  .ghost-overlay, .ghost-input{
+    font-family: 'Inter', sans-serif;
+    font-size: 0.93rem;
+    line-height: 1.4;
+    padding: 0.6rem 0.75rem;
+    white-space: pre;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .ghost-overlay{
+    position: absolute; inset: 0; z-index: 2;
+    pointer-events: none; border: 1px solid transparent;
+  }
+  .ghost-overlay .typed{ color: transparent; }
+  .ghost-overlay .suggest{ color: var(--text-faint); opacity: 0.65; }
+  .ghost-input{
+    position: relative; z-index: 1;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+  }
+  .ghost-input:focus{ outline:none; border-color: var(--accent-strong); box-shadow: 0 0 0 3px rgba(185,138,36,0.12); }
+  .ghost-input:disabled{ background: var(--panel-alt); color: var(--text-faint); }
+
+  .exercise-group{ border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden; }
+  .exercise-group + .exercise-group{ margin-top: 0.65rem; }
+  .exercise-group summary{
+    list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 0.9rem; background: var(--panel-alt);
+  }
+  .exercise-group summary::-webkit-details-marker{ display: none; }
+  .exercise-group summary .chev{ transition: transform .15s ease; color: var(--text-faint); }
+  .exercise-group[open] summary .chev{ transform: rotate(90deg); }
+  .exercise-group summary .group-name{ font-weight: 600; font-size: 0.9rem; }
+  .exercise-group summary .group-meta{ font-size: 0.72rem; color: var(--text-faint); }
+
+  table.log-table{ border-collapse: collapse; width: 100%; }
+  table.log-table th{
+    text-align: left; font-size: 0.71rem; color: var(--text-faint);
+    font-weight: 500; padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border-soft);
+    white-space: nowrap;
+  }
+  table.log-table td{
+    padding: 0.6rem 0.9rem; font-size: 0.85rem; border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+  }
+  table.log-table tr:last-child td{ border-bottom: none; }
+  table.log-table tr:hover td{ background: #FCFAF5; }
+  table.log-table tr.editing-row td{ background: var(--accent-soft); }
+
+  .modal-backdrop{ background: rgba(43,38,32,0.45); }
+
+  ::-webkit-scrollbar{ height: 8px; width: 8px; }
+  ::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-7">
+
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-7 pb-5 border-b divider">
+    <div class="flex items-baseline gap-2">
+      <h1 class="font-display text-2xl tracking-tight">Iron<span style="color:var(--accent-strong)">Log</span></h1>
+      <span class="text-xs text-[var(--text-faint)] hidden sm:inline">บันทึกและติดตามพัฒนาการการเทรน</span>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <select id="memberSelect" class="input-base w-44 hidden"></select>
+      <span id="noMemberLabel" class="text-sm text-[var(--text-faint)]">ยังไม่มีเมมเบอร์</span>
+      <button id="renameMemberBtn" class="icon-btn hidden" title="แก้ไขชื่อเมมเบอร์" aria-label="แก้ไขชื่อเมมเบอร์">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </button>
+      <button id="deleteMemberBtn" class="icon-btn danger hidden" title="ลบเมมเบอร์นี้" aria-label="ลบเมมเบอร์นี้">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H8a1 1 0 01-1-1V6h10z"/></svg>
+      </button>
+      <button id="addMemberBtn" class="btn-ghost whitespace-nowrap">+ เพิ่มเมมเบอร์ใหม่</button>
+      
+      <!-- ปุ่มส่งออก Word (.docx) ดีไซน์ Minimal -->
+      <button id="exportWordBtn" class="icon-btn" title="ส่งออกไฟล์ Word สรุปผลของคนที่เลือก (.docx)" aria-label="ส่งออกไฟล์ Word สรุปผลของคนที่เลือก">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      </button>
+
+      <button id="exportBtn" class="icon-btn" title="ส่งออกไฟล์ข้อมูลสำรอง (Export JSON)" aria-label="ส่งออกไฟล์ข้อมูลสำรอง">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </button>
+      <button id="importBtn" class="icon-btn" title="นำเข้าไฟล์ข้อมูลสำรอง (Import JSON)" aria-label="นำเข้าไฟล์ข้อมูลสำรอง">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <input type="file" id="importFileInput" accept=".json" class="hidden">
+
+      <button id="clearAllBtn" class="icon-btn danger" title="ล้างข้อมูลทั้งหมด" aria-label="ล้างข้อมูลทั้งหมด">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 mb-6">
+
+    <section class="panel p-5 sm:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg tracking-wide">บันทึกการเทรน</h2>
+        <span id="editModeTag" class="hidden text-xs px-2 py-0.5 rounded" style="background:var(--accent-soft); color:var(--accent-strong);">กำลังแก้ไข</span>
+      </div>
+      <form id="workoutForm" class="space-y-4">
+        <div>
+          <label class="field-label" for="dateInput">วันที่</label>
+          <input type="date" id="dateInput" class="input-base" required>
+        </div>
+
+        <div>
+          <label class="field-label" for="exerciseInput">ท่าออกกำลังกาย</label>
+          <div class="ghost-wrap">
+            <div class="ghost-overlay" aria-hidden="true"><span class="typed" id="ghostTyped"></span><span class="suggest" id="ghostSuggestion"></span></div>
+            <input type="text" id="exerciseInput" class="ghost-input" placeholder="เช่น Barbell Squat" autocomplete="off" required>
+          </div>
+          <p class="text-[0.68rem] text-[var(--text-faint)] mt-1">กด Tab หรือ Enter เพื่อเติมคำที่แนะนำ</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="field-label" for="weightInput">น้ำหนัก (kg)</label>
+            <input type="number" id="weightInput" class="input-base" step="0.5" min="0" required>
+          </div>
+          <div>
+            <label class="field-label" for="repsInput">จำนวนครั้ง</label>
+            <input type="number" id="repsInput" class="input-base" step="1" min="1" required>
+          </div>
+          <div>
+            <label class="field-label" for="setsInput">เซท</label>
+            <input type="number" id="setsInput" class="input-base" step="1" min="1" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="notesInput">หมายเหตุ</label>
+          <textarea id="notesInput" class="input-base" rows="2" placeholder="ความรู้สึก, ฟอร์ม, อื่นๆ (ถ้ามี)"></textarea>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="submit" id="submitBtn" class="btn-primary flex-1">บันทึกรายการ</button>
+          <button type="button" id="cancelEditBtn" class="btn-ghost hidden">ยกเลิก</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel p-5 sm:p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 class="font-display text-lg tracking-wide">กราฟพัฒนาการ</h2>
+          <select id="chartExerciseSelect" class="input-base w-full sm:w-56"></select>
+        </div>
+
+        <div id="chartStats" class="hidden flex flex-wrap gap-2 mb-4">
+          <div class="stat-chip">
+            <div class="stat-label">น้ำหนักล่าสุด</div>
+            <div class="stat-value tabular" id="statLatest">—</div>
+            <div class="stat-delta tabular" id="statDelta"></div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-label">น้ำหนักสูงสุด (PR)</div>
+            <div class="stat-value tabular" id="statPr">—</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-label">จำนวนครั้งที่บันทึก</div>
+            <div class="stat-value tabular" id="statCount">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative w-full flex-1 min-h-[300px] pb-2">
+        <canvas id="progressChart"></canvas>
+      </div>
+      <div id="emptyChart" class="hidden text-center py-10 flex-col justify-center items-center">
+        <p class="text-sm text-[var(--text-dim)]">ยังไม่มีข้อมูลสำหรับแสดงกราฟ</p>
+        <p class="text-xs text-[var(--text-faint)] mt-1">บันทึกท่าเดิมซ้ำหลายวันเพื่อดูพัฒนาการ</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel p-5 sm:p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-display text-lg tracking-wide">ประวัติการเทรน</h2>
+      <span id="historyCount" class="text-xs text-[var(--text-faint)]"></span>
+    </div>
+
+    <div id="bulkActionBar" class="hidden items-center justify-between gap-3 mb-4 px-4 py-2.5 rounded-lg" style="background:var(--accent-soft); border:1px solid var(--border-soft);">
+      <span class="text-sm" id="bulkCount" style="color:var(--accent-strong); font-weight:600;"></span>
+      <div class="flex items-center gap-2">
+        <button id="bulkClearBtn" class="btn-ghost">ยกเลิกการเลือก</button>
+        <button id="bulkDeleteBtn" class="btn-danger">ลบรายการที่เลือก</button>
+      </div>
+    </div>
+
+    <div id="historyGroups"></div>
+
+    <div id="emptyHistory" class="hidden text-center py-10 flex-col items-center justify-center">
+      <p class="text-sm text-[var(--text-dim)]" id="emptyHistoryTitle">ยังไม่มีประวัติการเทรนของเมมเบอร์นี้</p>
+      <p class="text-xs text-[var(--text-faint)] mt-1" id="emptyHistorySub">เริ่มบันทึกท่าแรกได้จากฟอร์มด้านบน</p>
+    </div>
+  </section>
+</div>
+
+<div id="memberModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 px-4">
+  <div class="panel p-6 w-full max-w-sm" style="background:#fff;">
+    <h3 class="font-display text-lg mb-4" id="memberModalTitle">เพิ่มเมมเบอร์ใหม่</h3>
+    <label class="field-label" for="newMemberName">ชื่อเมมเบอร์</label>
+    <input type="text" id="newMemberName" class="input-base mb-5" placeholder="เช่น มินท์">
+    <div class="flex justify-end gap-2">
+      <button id="cancelMemberBtn" class="btn-ghost">ยกเลิก</button>
+      <button id="confirmMemberBtn" class="btn-primary">เพิ่มเมมเบอร์</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 px-4">
+  <div class="panel p-6 w-full max-w-sm" style="background:#fff;">
+    <h3 class="font-display text-lg mb-2" id="confirmTitle">ยืนยันการลบ</h3>
+    <p class="text-sm text-[var(--text-dim)] mb-5" id="confirmMessage"></p>
+    <div class="flex justify-end gap-2">
+      <button id="confirmCancelBtn" class="btn-ghost">ยกเลิก</button>
+      <button id="confirmOkBtn" class="btn-danger">ลบ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const MEMBERS_KEY = 'ironlog_members_v1';
+  const WORKOUTS_KEY = 'ironlog_workouts_v1';
+
+  let members = [];
+  let workouts = [];
+  let currentMemberId = null;
+  let currentChartExercise = null;
+  let chartInstance = null;
+  let ghostSuggestionValue = '';
+  let editingWorkoutId = null;
+  let modalMode = 'add';
+  let confirmCallback = null;
+  let selectedWorkoutIds = new Set();
+
+  function load(){
+    const m = localStorage.getItem(MEMBERS_KEY);
+    const w = localStorage.getItem(WORKOUTS_KEY);
+    if(m === null && w === null){
+      seedSampleData();
+      save();
+    } else {
+      members = m ? JSON.parse(m) : [];
+      workouts = w ? JSON.parse(w) : [];
+    }
+  }
+  function save(){
+    localStorage.setItem(MEMBERS_KEY, JSON.stringify(members));
+    localStorage.setItem(WORKOUTS_KEY, JSON.stringify(workouts));
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+  function seedSampleData(){
+    const today = new Date();
+    function dateStr(offsetDays){
+      const d = new Date(today);
+      d.setDate(d.getDate() - offsetDays);
+      return d.toISOString().slice(0,10);
+    }
+    members = [
+      { id: 'm1', name: 'เอิร์ธ' },
+      { id: 'm2', name: 'แนน' },
+      { id: 'm3', name: 'ปอนด์' }
+    ];
+    workouts = [];
+    function addSeries(memberId, exercise, startWeight, step, reps, sets, weeks){
+      for(let i = weeks - 1; i >= 0; i--){
+        workouts.push({
+          id: uid(),
+          memberId,
+          date: dateStr(i * 7),
+          exercise,
+          weight: startWeight + (weeks - 1 - i) * step,
+          reps, sets,
+          notes: i === 0 ? 'ฟอร์มเริ่มนิ่งขึ้น' : ''
+        });
+      }
+    }
+    addSeries('m1', 'Barbell Squat', 60, 2.5, 5, 5, 6);
+    addSeries('m1', 'Bench Press', 40, 1.25, 8, 4, 6);
+    addSeries('m1', 'Deadlift', 80, 5, 5, 3, 5);
+
+    addSeries('m2', 'Barbell Squat', 35, 2.5, 8, 4, 5);
+    addSeries('m2', 'Overhead Press', 20, 1.25, 8, 4, 5);
+
+    addSeries('m3', 'Deadlift', 100, 5, 5, 3, 6);
+    addSeries('m3', 'Bench Press', 60, 2.5, 6, 4, 6);
+    addSeries('m3', 'Barbell Squat', 90, 2.5, 5, 5, 6);
+  }
+
+  function memberWorkouts(memberId){
+    return workouts.filter(w => w.memberId === memberId);
+  }
+  function distinctExercises(memberId){
+    const scoped = memberWorkouts(memberId);
+    const source = scoped.length ? scoped : workouts;
+    const list = [...new Set(source.map(w => w.exercise))];
+    return list.sort((a,b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
+  }
+
+  function showConfirm(message, onOk, title){
+    document.getElementById('confirmTitle').textContent = title || 'ยืนยันการลบ';
+    document.getElementById('confirmMessage').textContent = message;
+    confirmCallback = onOk;
+    const m = document.getElementById('confirmModal');
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+  }
+  function closeConfirm(){
+    const m = document.getElementById('confirmModal');
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+    confirmCallback = null;
+  }
+  document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirm);
+  document.getElementById('confirmOkBtn').addEventListener('click', () => {
+    const cb = confirmCallback;
+    closeConfirm();
+    if(cb) cb();
+  });
+  document.getElementById('confirmModal').addEventListener('click', (e) => {
+    if(e.target.id === 'confirmModal') closeConfirm();
+  });
+
+  function renderMemberSelect(){
+    const sel = document.getElementById('memberSelect');
+    const noLabel = document.getElementById('noMemberLabel');
+    const renameBtn = document.getElementById('renameMemberBtn');
+    const deleteBtn = document.getElementById('deleteMemberBtn');
+
+    sel.innerHTML = '';
+    members.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.name;
+      sel.appendChild(opt);
+    });
+
+    if(!currentMemberId || !members.find(m => m.id === currentMemberId)){
+      currentMemberId = members.length ? members[0].id : null;
+    }
+
+    if(members.length){
+      sel.value = currentMemberId;
+      sel.classList.remove('hidden');
+      noLabel.classList.add('hidden');
+      renameBtn.classList.remove('hidden');
+      deleteBtn.classList.remove('hidden');
+    } else {
+      sel.classList.add('hidden');
+      noLabel.classList.remove('hidden');
+      renameBtn.classList.add('hidden');
+      deleteBtn.classList.add('hidden');
+    }
+
+    updateFormAvailability();
+  }
+
+  function updateFormAvailability(){
+    const disabled = !currentMemberId;
+    ['dateInput','exerciseInput','weightInput','repsInput','setsInput','notesInput','submitBtn'].forEach(id => {
+      document.getElementById(id).disabled = disabled;
+    });
+    document.getElementById('chartExerciseSelect').disabled = disabled;
+  }
+
+  function updateBulkActionBar(){
+    const bar = document.getElementById('bulkActionBar');
+    const count = document.getElementById('bulkCount');
+    if(selectedWorkoutIds.size > 0){
+      count.textContent = `เลือกอยู่ ${selectedWorkoutIds.size} รายการ`;
+      bar.classList.remove('hidden');
+      bar.classList.add('flex');
+    } else {
+      bar.classList.add('hidden');
+      bar.classList.remove('flex');
+    }
+  }
+
+  document.getElementById('bulkClearBtn').addEventListener('click', () => {
+    selectedWorkoutIds.clear();
+    renderHistory();
+  });
+
+  document.getElementById('bulkDeleteBtn').addEventListener('click', () => {
+    if(selectedWorkoutIds.size === 0) return;
+    showConfirm(`ต้องการลบรายการที่เลือกไว้ทั้งหมด ${selectedWorkoutIds.size} รายการหรือไม่?`, () => {
+      workouts = workouts.filter(w => !selectedWorkoutIds.has(w.id));
+      if(editingWorkoutId && selectedWorkoutIds.has(editingWorkoutId)) exitEditMode();
+      selectedWorkoutIds.clear();
+      save();
+      renderHistory();
+      renderChartExerciseOptions();
+      renderChart();
+    }, 'ลบรายการที่เลือก');
+  });
+
+  function renderHistory(){
+    const container = document.getElementById('historyGroups');
+    const empty = document.getElementById('emptyHistory');
+    const emptyTitle = document.getElementById('emptyHistoryTitle');
+    const emptySub = document.getElementById('emptyHistorySub');
+    const countEl = document.getElementById('historyCount');
+
+    container.innerHTML = '';
+
+    if(!currentMemberId){
+      countEl.textContent = '';
+      emptyTitle.textContent = 'ยังไม่มีเมมเบอร์ในระบบ';
+      emptySub.textContent = 'เพิ่มเมมเบอร์แรกจากมุมขวาบนเพื่อเริ่มบันทึก';
+      empty.classList.remove('hidden');
+      empty.classList.add('flex');
+      updateBulkActionBar();
+      return;
+    }
+
+    const list = memberWorkouts(currentMemberId);
+    countEl.textContent = list.length ? `${list.length} รายการ` : '';
+
+    if(!list.length){
+      emptyTitle.textContent = 'ยังไม่มีประวัติการเทรนของเมมเบอร์นี้';
+      emptySub.textContent = 'เริ่มบันทึกท่าแรกได้จากฟอร์มด้านบน';
+      empty.classList.remove('hidden');
+      empty.classList.add('flex');
+      updateBulkActionBar();
+      return;
+    }
+    empty.classList.add('hidden');
+    empty.classList.remove('flex');
+
+    const groups = {};
+    list.forEach(w => {
+      if(!groups[w.exercise]) groups[w.exercise] = [];
+      groups[w.exercise].push(w);
+    });
+
+    const groupArr = Object.keys(groups).map(exercise => {
+      const entries = groups[exercise].slice().sort((a,b) => b.date.localeCompare(a.date));
+      return { exercise, entries, latestDate: entries[0].date };
+    });
+
+    // เรียงท่า A-Z เสมอ
+    groupArr.sort((a,b) => a.exercise.localeCompare(b.exercise, 'th', { sensitivity: 'base' }));
+
+    groupArr.forEach(group => {
+      const details = document.createElement('details');
+      details.className = 'exercise-group';
+      details.open = true;
+
+      const summary = document.createElement('summary');
+      summary.innerHTML = `
+        <div class="flex items-center gap-2">
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          <span class="group-name">${escapeHtml(group.exercise)}</span>
+        </div>
+        <span class="group-meta">${group.entries.length} รายการ · ล่าสุด ${formatDate(group.latestDate)}</span>
+      `;
+      details.appendChild(summary);
+
+      const tableWrap = document.createElement('div');
+      tableWrap.className = 'overflow-x-auto';
+      const table = document.createElement('table');
+      table.className = 'log-table';
+      
+      const groupIds = group.entries.map(w => w.id);
+      const isAllGroupChecked = groupIds.length > 0 && groupIds.every(id => selectedWorkoutIds.has(id));
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th class="w-8"><input type="checkbox" class="group-check" title="เลือกทั้งหมดในกลุ่มนี้" ${isAllGroupChecked ? 'checked' : ''}></th>
+            <th>วันที่</th>
+            <th>น้ำหนัก</th>
+            <th>จำนวนครั้ง × เซท</th>
+            <th>Total Volume</th>
+            <th>โน้ต</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+
+      group.entries.forEach(w => {
+        const volume = w.weight * w.sets * w.reps;
+        const tr = document.createElement('tr');
+        if(w.id === editingWorkoutId) tr.classList.add('editing-row');
+        const isChecked = selectedWorkoutIds.has(w.id) ? 'checked' : '';
+        tr.innerHTML = `
+          <td><input type="checkbox" class="row-check" data-id="${w.id}" ${isChecked}></td>
+          <td class="tabular whitespace-nowrap">${formatDate(w.date)}</td>
+          <td class="tabular">${w.weight} kg</td>
+          <td class="tabular">${w.reps} × ${w.sets}</td>
+          <td class="tabular" style="color:var(--accent-strong)">${volume.toLocaleString('th-TH')} kg</td>
+          <td class="text-[var(--text-dim)] max-w-[160px] truncate" title="${escapeHtml(w.notes||'')}">${escapeHtml(w.notes||'—')}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <button class="row-action" data-edit="${w.id}" title="แก้ไขรายการ" aria-label="แก้ไขรายการ">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </button>
+              <button class="row-action danger" data-delete="${w.id}" title="ลบรายการ" aria-label="ลบรายการ">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H8a1 1 0 01-1-1V6h10z"/></svg>
+              </button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      const groupCheck = table.querySelector('.group-check');
+      const rowChecks = tbody.querySelectorAll('.row-check');
+
+      groupCheck.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        groupIds.forEach(id => {
+          if(checked) selectedWorkoutIds.add(id);
+          else selectedWorkoutIds.delete(id);
+        });
+        renderHistory();
+      });
+
+      rowChecks.forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const id = e.target.dataset.id;
+          if(e.target.checked) selectedWorkoutIds.add(id);
+          else selectedWorkoutIds.delete(id);
+          
+          groupCheck.checked = groupIds.every(gId => selectedWorkoutIds.has(gId));
+          updateBulkActionBar();
+        });
+      });
+
+      tableWrap.appendChild(table);
+      details.appendChild(tableWrap);
+      container.appendChild(details);
+    });
+
+    container.querySelectorAll('button[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        showConfirm('ลบรายการนี้ออกจากประวัติการเทรน?', () => {
+          const id = btn.dataset.delete;
+          workouts = workouts.filter(w => w.id !== id);
+          selectedWorkoutIds.delete(id);
+          if(editingWorkoutId === id) exitEditMode();
+          save();
+          renderHistory();
+          renderChartExerciseOptions();
+          renderChart();
+        });
+      });
+    });
+
+    container.querySelectorAll('button[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => enterEditMode(btn.dataset.edit));
+    });
+
+    updateBulkActionBar();
+  }
+
+  function formatDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
+  }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function enterEditMode(id){
+    const w = workouts.find(x => x.id === id);
+    if(!w) return;
+    editingWorkoutId = id;
+    document.getElementById('dateInput').value = w.date;
+    exerciseInput.value = w.exercise;
+    document.getElementById('weightInput').value = w.weight;
+    document.getElementById('repsInput').value = w.reps;
+    document.getElementById('setsInput').value = w.sets;
+    document.getElementById('notesInput').value = w.notes || '';
+    ghostTyped.textContent = w.exercise;
+    ghostSuggestion.textContent = '';
+    ghostSuggestionValue = '';
+
+    document.getElementById('submitBtn').textContent = 'บันทึกการแก้ไข';
+    document.getElementById('cancelEditBtn').classList.remove('hidden');
+    document.getElementById('editModeTag').classList.remove('hidden');
+    renderHistory();
+    document.getElementById('workoutForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function exitEditMode(){
+    editingWorkoutId = null;
+    document.getElementById('submitBtn').textContent = 'บันทึกรายการ';
+    document.getElementById('cancelEditBtn').classList.add('hidden');
+    document.getElementById('editModeTag').classList.add('hidden');
+  }
+
+  document.getElementById('cancelEditBtn').addEventListener('click', () => {
+    exitEditMode();
+    document.getElementById('workoutForm').reset();
+    document.getElementById('dateInput').value = todayStr();
+    ghostTyped.textContent = '';
+    ghostSuggestion.textContent = '';
+    ghostSuggestionValue = '';
+    renderHistory();
+  });
+
+  function renderChartExerciseOptions(){
+    const sel = document.getElementById('chartExerciseSelect');
+    const exercises = currentMemberId ? distinctExercises(currentMemberId) : [];
+    sel.innerHTML = '';
+    exercises.forEach(ex => {
+      const opt = document.createElement('option');
+      opt.value = ex;
+      opt.textContent = ex;
+      sel.appendChild(opt);
+    });
+    if(!currentChartExercise || !exercises.includes(currentChartExercise)){
+      currentChartExercise = exercises.length ? exercises[0] : null;
+    }
+    if(currentChartExercise) sel.value = currentChartExercise;
+  }
+
+  function renderChart(){
+    const canvas = document.getElementById('progressChart');
+    const emptyEl = document.getElementById('emptyChart');
+    const statsEl = document.getElementById('chartStats');
+
+    const data = currentMemberId
+      ? memberWorkouts(currentMemberId).filter(w => w.exercise === currentChartExercise)
+      : [];
+
+    if(!currentChartExercise || !data.length){
+      canvas.classList.add('hidden');
+      statsEl.classList.add('hidden');
+      emptyEl.classList.remove('hidden');
+      emptyEl.classList.add('flex');
+      if(chartInstance){ chartInstance.destroy(); chartInstance = null; }
+      return;
+    }
+    canvas.classList.remove('hidden');
+    statsEl.classList.remove('hidden');
+    statsEl.classList.add('flex');
+    emptyEl.classList.add('hidden');
+    emptyEl.classList.remove('flex');
+
+    const byDate = {};
+    data.forEach(w => {
+      if(!byDate[w.date] || w.weight > byDate[w.date]) byDate[w.date] = w.weight;
+    });
+    
+    const dates = Object.keys(byDate).sort((a,b) => a.localeCompare(b));
+    const values = dates.map(d => byDate[d]);
+    const labels = dates.map(formatDate);
+
+    const prEntry = data.reduce((max, w) => (w.weight > max.weight ? w : max), data[0]);
+    document.getElementById('statLatest').textContent = values[values.length - 1] + ' kg';
+    document.getElementById('statPr').textContent = prEntry.weight + ' kg';
+    document.getElementById('statCount').textContent = data.length + ' ครั้ง';
+
+    const deltaEl = document.getElementById('statDelta');
+    if(values.length >= 2){
+      const delta = values[values.length - 1] - values[values.length - 2];
+      const rounded = Math.round(delta * 100) / 100;
+      if(rounded > 0){
+        deltaEl.className = 'stat-delta tabular up';
+        deltaEl.textContent = `▲ +${rounded} kg จากครั้งก่อน`;
+      } else if(rounded < 0){
+        deltaEl.className = 'stat-delta tabular down';
+        deltaEl.textContent = `▼ ${rounded} kg จากครั้งก่อน`;
+      } else {
+        deltaEl.className = 'stat-delta tabular flat';
+        deltaEl.textContent = 'เท่าเดิมจากครั้งก่อน';
+      }
+    } else {
+      deltaEl.className = 'stat-delta tabular flat';
+      deltaEl.textContent = 'ยังไม่มีข้อมูลครั้งก่อนหน้า';
+    }
+
+    if(chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: currentChartExercise + ' — น้ำหนักสูงสุด (kg)',
+          data: values,
+          borderColor: '#B98A24',
+          backgroundColor: 'rgba(185,138,36,0.08)',
+          pointBackgroundColor: (ctx) => ctx.dataIndex === values.length - 1 ? '#B98A24' : '#FFFFFF',
+          pointBorderColor: '#B98A24',
+          pointBorderWidth: 2,
+          pointRadius: (ctx) => ctx.dataIndex === values.length - 1 ? 6 : 4,
+          pointHoverRadius: 7,
+          tension: 0.25,
+          fill: true,
+          borderWidth: 2.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: { left: 10, right: 25, top: 15, bottom: 25 }
+        },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#2B2620',
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            padding: 10,
+            cornerRadius: 6,
+            borderColor: '#E6E0D2',
+            borderWidth: 1,
+            callbacks: {
+              label: (ctx) => `น้ำหนักสูงสุด: ${ctx.parsed.y} kg`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#79736D', font: { family: 'Inter', size: 10 }, maxRotation: 30, minRotation: 0, padding: 6, autoSkip: true, maxTicksLimit: 6 }
+          },
+          y: {
+            beginAtZero: true,
+            grace: '10%',
+            grid: { color: '#EFEADD' },
+            ticks: { color: '#79736D', font: { family: 'Inter', size: 11 } },
+            title: { display: true, text: 'น้ำหนัก (kg)', color: '#79736D', font: { size: 11 } }
+          }
+        }
+      }
+    });
+  }
+
+  const exerciseInput = document.getElementById('exerciseInput');
+  const ghostTyped = document.getElementById('ghostTyped');
+  const ghostSuggestion = document.getElementById('ghostSuggestion');
+
+  function updateGhost(){
+    const val = exerciseInput.value;
+    ghostTyped.textContent = val;
+    if(!val){
+      ghostSuggestion.textContent = '';
+      ghostSuggestionValue = '';
+      return;
+    }
+    const pool = distinctExercises(currentMemberId);
+    const match = pool.find(name =>
+      name.toLowerCase().startsWith(val.toLowerCase()) &&
+      name.toLowerCase() !== val.toLowerCase()
+    );
+    if(match){
+      ghostSuggestionValue = match;
+      ghostSuggestion.textContent = match.slice(val.length);
+    } else {
+      ghostSuggestionValue = '';
+      ghostSuggestion.textContent = '';
+    }
+  }
+
+  exerciseInput.addEventListener('input', updateGhost);
+  exerciseInput.addEventListener('keydown', (e) => {
+    if((e.key === 'Tab' || e.key === 'Enter') && ghostSuggestionValue){
+      e.preventDefault();
+      exerciseInput.value = ghostSuggestionValue;
+      ghostTyped.textContent = ghostSuggestionValue;
+      ghostSuggestion.textContent = '';
+      ghostSuggestionValue = '';
+      document.getElementById('weightInput').focus();
+    }
+  });
+
+  document.getElementById('workoutForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if(!currentMemberId) return;
+
+    const date = document.getElementById('dateInput').value;
+    const exercise = exerciseInput.value.trim();
+    const weight = parseFloat(document.getElementById('weightInput').value);
+    const reps = parseInt(document.getElementById('repsInput').value, 10);
+    const sets = parseInt(document.getElementById('setsInput').value, 10);
+    const notes = document.getElementById('notesInput').value.trim();
+
+    if(!date || !exercise || isNaN(weight) || isNaN(sets) || isNaN(reps)) return;
+
+    if(editingWorkoutId){
+      const w = workouts.find(x => x.id === editingWorkoutId);
+      if(w){
+        w.date = date; w.exercise = exercise; w.weight = weight;
+        w.reps = reps; w.sets = sets; w.notes = notes;
+      }
+      exitEditMode();
+    } else {
+      workouts.push({ id: uid(), memberId: currentMemberId, date, exercise, weight, sets, reps, notes });
+    }
+    save();
+
+    e.target.reset();
+    document.getElementById('dateInput').value = todayStr();
+    ghostTyped.textContent = '';
+    ghostSuggestion.textContent = '';
+    ghostSuggestionValue = '';
+
+    renderHistory();
+    renderChartExerciseOptions();
+    renderChart();
+  });
+
+  function todayStr(){
+    return new Date().toISOString().slice(0,10);
+  }
+
+  document.getElementById('memberSelect').addEventListener('change', (e) => {
+    currentMemberId = e.target.value;
+    currentChartExercise = null;
+    selectedWorkoutIds.clear();
+    exitEditMode();
+    renderHistory();
+    renderChartExerciseOptions();
+    renderChart();
+    updateGhost();
+    updateFormAvailability();
+  });
+
+  document.getElementById('chartExerciseSelect').addEventListener('change', (e) => {
+    currentChartExercise = e.target.value;
+    renderChart();
+  });
+
+  document.getElementById('deleteMemberBtn').addEventListener('click', () => {
+    if(!currentMemberId) return;
+    const m = members.find(x => x.id === currentMemberId);
+    if(!m) return;
+    showConfirm(`ลบเมมเบอร์ "${m.name}" พร้อมประวัติการเทรนทั้งหมด?`, () => {
+      workouts = workouts.filter(w => w.memberId !== currentMemberId);
+      members = members.filter(x => x.id !== currentMemberId);
+      currentMemberId = null;
+      currentChartExercise = null;
+      selectedWorkoutIds.clear();
+      exitEditMode();
+      save();
+      renderMemberSelect();
+      renderHistory();
+      renderChartExerciseOptions();
+      renderChart();
+    }, 'ลบเมมเบอร์');
+  });
+
+  document.getElementById('clearAllBtn').addEventListener('click', () => {
+    showConfirm('ลบเมมเบอร์และประวัติการเทรนทั้งหมดในระบบ การกระทำนี้ย้อนกลับไม่ได้', () => {
+      members = [];
+      workouts = [];
+      currentMemberId = null;
+      currentChartExercise = null;
+      selectedWorkoutIds.clear();
+      exitEditMode();
+      save();
+      renderMemberSelect();
+      renderHistory();
+      renderChartExerciseOptions();
+      renderChart();
+    }, 'ล้างข้อมูลทั้งหมด');
+  });
+
+  /* ฟังก์ชัน Export เป็นไฟล์ Word (.docx) ดีไซน์ Minimal & Clean อ่านง่าย สบายตา */
+  async function exportToWord() {
+    if (!currentMemberId) {
+      alert('กรุณาเลือกหรือเพิ่มเมมเบอร์ก่อนส่งออก');
+      return;
+    }
+
+    const currentMember = members.find(m => m.id === currentMemberId);
+    if (!currentMember) {
+      alert('ไม่พบข้อมูลเมมเบอร์ที่เลือก');
+      return;
+    }
+
+    if (typeof docx === 'undefined') {
+      alert('ระบบกำลังโหลดส่วนประกอบเพิ่มเติม กรุณาลองใหม่อีกครั้งในไม่กี่วินาที');
+      return;
+    }
+
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle } = docx;
+
+    // การกำหนดสไตล์ Minimal & Clean
+    const FONT = "Sarabun";           // ฟอนต์ไร้หัวอ่านง่าย สะอาดตา
+    const COLOR_MAIN = "2D3748";      // สีข้อความหลัก Off-Black ไม่ดำจัดจนปวดตา
+    const COLOR_MUTED = "718096";     // สีเทานุ่มนวล สำหรับรายละเอียดรอง
+    const COLOR_ACCENT = "B98A24";    // สีทองพรีเมียม สำหรับเน้นหัวข้อ
+    const COLOR_BG_HEADER = "F8FAFC"; // สีพื้นหลังหัวตาราง เทา-ฟ้าอ่อน สบายตา
+    const COLOR_BORDER = "E2E8F0";    // สีเส้นขอบบางนุ่มนวล
+
+    // เส้นขอบตาราง Minimal: ไม่มีเส้นแนวตั้ง มีเฉพาะเส้นแนวนอนสีเทาบางๆ
+    const cleanBorders = {
+      top: { style: BorderStyle.SINGLE, size: 4, color: COLOR_BORDER },
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: COLOR_BORDER },
+      left: { style: BorderStyle.NONE },
+      right: { style: BorderStyle.NONE }
+    };
+
+    // ระยะเว้นขอบภายในเซลล์ตาราง (Cell Margins/Padding) ช่วยให้ตารางโปร่งสบายตา
+    const cellMargins = {
+      top: 120,
+      bottom: 120,
+      left: 160,
+      right: 160
+    };
+
+    const children = [];
+
+    // Header เอกสาร
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({ text: "IRON LOG", bold: true, size: 28, font: FONT, color: COLOR_ACCENT })
+        ],
+        spacing: { after: 80, line: 360 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: `รายงานสรุปผลการเทรน — ${currentMember.name}`, bold: true, size: 22, font: FONT, color: COLOR_MAIN })
+        ],
+        spacing: { after: 60, line: 360 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: `วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`, size: 18, font: FONT, color: COLOR_MUTED })
+        ],
+        spacing: { after: 300, line: 360 }
+      })
+    );
+
+    const mWorkouts = workouts.filter(w => w.memberId === currentMember.id);
+
+    if (mWorkouts.length === 0) {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: "— ยังไม่มีประวัติการบันทึกการเทรน —", italic: true, color: COLOR_MUTED, size: 20, font: FONT })
+          ],
+          spacing: { after: 200, line: 360 }
+        })
+      );
+    } else {
+      const grouped = {};
+      mWorkouts.forEach(w => {
+        if (!grouped[w.exercise]) grouped[w.exercise] = [];
+        grouped[w.exercise].push(w);
+      });
+
+      // เรียงท่า A-Z เสมอ
+      const sortedExercises = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'th', { sensitivity: 'base' }));
+
+      // 1. ตารางสรุปผลสถิติสูงสุด (Personal Records)
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: "SUMMARY (PERSONAL RECORDS)", bold: true, size: 20, font: FONT, color: COLOR_ACCENT })
+          ],
+          spacing: { before: 180, after: 140, line: 360 }
+        })
+      );
+
+      const summaryRows = [
+        new TableRow({
+          tableHeader: true,
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "ท่าออกกำลังกาย (A-Z)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })],
+              shading: { fill: COLOR_BG_HEADER },
+              borders: cleanBorders,
+              width: { size: 45, type: WidthType.PERCENTAGE }
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนักสูงสุด (PR)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })],
+              shading: { fill: COLOR_BG_HEADER },
+              borders: cleanBorders,
+              width: { size: 30, type: WidthType.PERCENTAGE }
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง (Reps)", bold: true, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })],
+              shading: { fill: COLOR_BG_HEADER },
+              borders: cleanBorders,
+              width: { size: 25, type: WidthType.PERCENTAGE }
+            })
+          ]
+        })
+      ];
+
+      sortedExercises.forEach(exName => {
+        const items = grouped[exName];
+        let prItem = items[0];
+        items.forEach(item => {
+          if (item.weight > prItem.weight || (item.weight === prItem.weight && item.reps > prItem.reps)) {
+            prItem = item;
+          }
+        });
+
+        summaryRows.push(
+          new TableRow({
+            children: [
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: exName, size: 19, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], borders: cleanBorders }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.weight} kg`, size: 19, font: FONT, color: COLOR_MAIN, bold: true })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${prItem.reps}`, size: 19, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders })
+            ]
+          })
+        );
+      });
+
+      children.push(
+        new Table({
+          rows: summaryRows,
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          margins: cellMargins
+        }),
+        new Paragraph({ text: "", spacing: { after: 320, line: 360 } })
+      );
+
+      // 2. รายละเอียดประวัติการเทรน (เรียงท่า A-Z เสมอ)
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: "WORKOUT HISTORY", bold: true, size: 20, font: FONT, color: COLOR_ACCENT })
+          ],
+          spacing: { before: 200, after: 140, line: 360 }
+        })
+      );
+
+      sortedExercises.forEach(exercise => {
+        const items = grouped[exercise].sort((a, b) => b.date.localeCompare(a.date));
+        const pr = Math.max(...items.map(i => i.weight));
+
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: exercise, bold: true, color: COLOR_MAIN, size: 20, font: FONT }),
+              new TextRun({ text: `  ·  PR: ${pr} kg  ·  บันทึกทั้งหมด ${items.length} ครั้ง`, size: 18, font: FONT, color: COLOR_MUTED })
+            ],
+            spacing: { before: 200, after: 120, line: 360 }
+          })
+        );
+
+        const detailRows = [
+          new TableRow({
+            tableHeader: true,
+            children: [
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "วันที่", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 22, type: WidthType.PERCENTAGE } }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "น้ำหนัก", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 20, type: WidthType.PERCENTAGE } }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "จำนวนครั้ง", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 18, type: WidthType.PERCENTAGE } }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "เซท", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 15, type: WidthType.PERCENTAGE } }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "โน้ต", bold: true, size: 17, font: FONT, color: COLOR_MAIN })], spacing: { line: 320 } })], shading: { fill: COLOR_BG_HEADER }, borders: cleanBorders, width: { size: 25, type: WidthType.PERCENTAGE } })
+            ]
+          })
+        ];
+
+        items.forEach(item => {
+          detailRows.push(
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatDate(item.date), size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.weight} kg`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.reps}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `${item.sets}`, size: 18, font: FONT, color: COLOR_MAIN })], alignment: AlignmentType.CENTER, spacing: { line: 320 } })], borders: cleanBorders }),
+                new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: item.notes || "-", size: 18, font: FONT, color: COLOR_MUTED })], spacing: { line: 320 } })], borders: cleanBorders })
+              ]
+            })
+          );
+        });
+
+        children.push(
+          new Table({
+            rows: detailRows,
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            margins: cellMargins
+          }),
+          new Paragraph({ text: "", spacing: { after: 240, line: 360 } })
+        );
+      });
+    }
+
+    const docObj = new Document({
+      styles: {
+        default: {
+          document: {
+            run: {
+              font: FONT,
+              color: COLOR_MAIN,
+              size: 20
+            },
+            paragraph: {
+              spacing: { line: 360, lineRule: "auto" }
+            }
+          }
+        }
+      },
+      sections: [{
+        properties: {
+          page: {
+            margin: {
+              top: 1440,    // ระยะขอบกระดาษ 1 นิ้วรอบทิศทาง
+              bottom: 1440,
+              left: 1440,
+              right: 1440
+            }
+          }
+        },
+        children: children
+      }]
+    });
+
+    const blob = await Packer.toBlob(docObj);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const safeName = currentMember.name.replace(/[/\\?%*:|"<>]/g, '_');
+    a.download = `IronLog_${safeName}_${todayStr()}.docx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportWordBtn').addEventListener('click', exportToWord);
+
+  /* ฟังก์ชัน Export / Import JSON */
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const data = { members, workouts };
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ironlog_backup_${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFileInput = document.getElementById('importFileInput');
+  document.getElementById('importBtn').addEventListener('click', () => {
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if(data && Array.isArray(data.members) && Array.isArray(data.workouts)){
+          members = data.members;
+          workouts = data.workouts;
+          currentMemberId = members.length ? members[0].id : null;
+          currentChartExercise = null;
+          selectedWorkoutIds.clear();
+          exitEditMode();
+          save();
+          renderMemberSelect();
+          renderHistory();
+          renderChartExerciseOptions();
+          renderChart();
+          alert('นำเข้าข้อมูลสำเร็จแล้ว');
+        } else {
+          alert('รูปแบบไฟล์ JSON ไม่ถูกต้อง');
+        }
+      } catch(err) {
+        alert('เกิดข้อผิดพลาดในการอ่านไฟล์ JSON');
+      }
+      importFileInput.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  const modal = document.getElementById('memberModal');
+  const newMemberName = document.getElementById('newMemberName');
+  const modalTitle = document.getElementById('memberModalTitle');
+  const confirmMemberBtn = document.getElementById('confirmMemberBtn');
+
+  function openModal(mode){
+    modalMode = mode;
+    if(mode === 'rename'){
+      const m = members.find(x => x.id === currentMemberId);
+      modalTitle.textContent = 'แก้ไขชื่อเมมเบอร์';
+      confirmMemberBtn.textContent = 'บันทึก';
+      newMemberName.value = m ? m.name : '';
+    } else {
+      modalTitle.textContent = 'เพิ่มเมมเบอร์ใหม่';
+      confirmMemberBtn.textContent = 'เพิ่มเมมเบอร์';
+      newMemberName.value = '';
+    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    newMemberName.focus();
+  }
+  function closeModal(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  document.getElementById('addMemberBtn').addEventListener('click', () => openModal('add'));
+  document.getElementById('renameMemberBtn').addEventListener('click', () => openModal('rename'));
+  document.getElementById('cancelMemberBtn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+
+  function confirmMemberModal(){
+    const name = newMemberName.value.trim();
+    if(!name) return;
+
+    if(modalMode === 'rename'){
+      const m = members.find(x => x.id === currentMemberId);
+      if(m) m.name = name;
+      save();
+      renderMemberSelect();
+    } else {
+      const id = uid();
+      members.push({ id, name });
+      save();
+      currentMemberId = id;
+      currentChartExercise = null;
+      selectedWorkoutIds.clear();
+      renderMemberSelect();
+      renderChartExerciseOptions();
+      renderChart();
+      updateGhost();
+    }
+    renderHistory();
+    closeModal();
+  }
+  confirmMemberBtn.addEventListener('click', confirmMemberModal);
+  newMemberName.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); confirmMemberModal(); }
+    if(e.key === 'Escape'){ closeModal(); }
+  });
+
+  function init(){
+    load();
+    document.getElementById('dateInput').value = todayStr();
+    renderMemberSelect();
+    renderHistory();
+    renderChartExerciseOptions();
+    renderChart();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
