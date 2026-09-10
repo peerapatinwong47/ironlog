@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Iron Log — Workout & Training Tracker</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -30,7 +30,7 @@
     --danger: #BD4632;
     --danger-bg: #FBEAE5;
   }
-  html,body{ background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.55; overflow-x: hidden; }
+  html,body{ background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.55; overflow-x: hidden; touch-action: manipulation; }
   .font-display{ font-family: 'Oswald', sans-serif; }
   .tabular{ font-variant-numeric: tabular-nums; }
 
@@ -2330,6 +2330,16 @@
 
     updateDisplays();
   }
+
+  // ป้องกันการซูมด้วยนิ้ว (pinch-zoom) และการซูมจากการแตะสองครั้งติดกัน (double-tap zoom)
+  // เผื่อเบราว์เซอร์บางตัวไม่สนใจ maximum-scale/user-scalable ใน viewport meta tag
+  document.addEventListener('gesturestart', (e) => e.preventDefault());
+  let lastTouchEndTs = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEndTs <= 300) e.preventDefault();
+    lastTouchEndTs = now;
+  }, { passive: false });
 
   function init(){
     load();
