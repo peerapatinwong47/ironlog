@@ -1524,7 +1524,8 @@
 
   function findExerciseHistory(exerciseName){
     const cleanName = exerciseName.trim().toLowerCase();
-    return workouts.filter(w => w.exercise && w.exercise.trim().toLowerCase() === cleanName);
+    // จำกัดเฉพาะประวัติของเมมเบอร์ที่กำลังเลือกอยู่เท่านั้น ไม่ดึงข้ามคนอื่น
+    return workouts.filter(w => w.memberId === currentMemberId && w.exercise && w.exercise.trim().toLowerCase() === cleanName);
   }
 
   // หาเซทเดียวที่น้ำหนักสูงสุดตลอดประวัติของท่านี้ (ไม่ใช่ทั้งวันที่บันทึก)
