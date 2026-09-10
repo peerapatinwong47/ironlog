@@ -2332,8 +2332,16 @@
   }
 
   // ป้องกันการซูมด้วยนิ้ว (pinch-zoom) และการซูมจากการแตะสองครั้งติดกัน (double-tap zoom)
-  // เผื่อเบราว์เซอร์บางตัวไม่สนใจ maximum-scale/user-scalable ใน viewport meta tag
+  // ดัก touch หลายจุดพร้อมกันโดยตรง ซึ่งเป็นวิธีที่ได้ผลจริงในเบราว์เซอร์มือถือส่วนใหญ่
+  // (ต่างจาก meta tag user-scalable=no ที่ iOS Safari รุ่นใหม่มักไม่สนใจ)
   document.addEventListener('gesturestart', (e) => e.preventDefault());
+  document.addEventListener('gesturechange', (e) => e.preventDefault());
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
   let lastTouchEndTs = 0;
   document.addEventListener('touchend', (e) => {
     const now = Date.now();
